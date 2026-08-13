@@ -48,6 +48,8 @@ body{margin:0;background:var(--surface-0);color:var(--text-primary);font-family:
 .stamp b{color:var(--text-secondary);font-weight:600}
 .iconbtn{width:32px;height:32px;border-radius:8px;border:1px solid var(--line);background:var(--surface-1);color:var(--text-secondary);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:background .12s}
 .iconbtn:hover{background:var(--surface-2)}
+.pdfbtn{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface-1);color:var(--text-secondary);cursor:pointer;font:inherit;font-size:12.5px;font-weight:650;white-space:nowrap;transition:background .12s,color .12s}
+.pdfbtn:hover{background:var(--surface-2);color:var(--text-primary)}
 .tabs{max-width:1180px;margin:0 auto;display:flex;gap:2px;padding:0 14px;overflow-x:auto;scrollbar-width:thin}
 .tab{flex:none;display:flex;align-items:center;gap:8px;padding:11px 14px;background:none;border:0;border-bottom:2px solid transparent;color:var(--text-secondary);font:inherit;font-size:13px;cursor:pointer;white-space:nowrap;margin-bottom:-1px;transition:color .12s}
 .tab:hover{color:var(--text-primary)}
@@ -214,6 +216,58 @@ table.wow thead th:not(:first-child){padding-right:77px}
 #gate button:hover{filter:brightness(1.05)}
 #gate .err{color:var(--negative);font-size:12.5px;min-height:15px;font-weight:600;margin-top:2px}
 #gate .gfoot{margin-top:30px;font-size:12px;color:var(--text-tertiary);letter-spacing:.02em}
+
+/* ================= PRINT / SAVE-AS-PDF ================= */
+/* Clean white paper. Every client prints in full, each starting on its own page. */
+@media print{
+  :root,:root[data-theme="dark"],:root[data-theme="light"]{
+    --surface-0:#ffffff; --surface-1:#ffffff; --surface-2:#f3f4f6; --surface-3:#e5e7eb;
+    --line:#d4d7dc; --line-soft:#e6e8ec;
+    --text-primary:#141417; --text-secondary:#3f3f46; --text-tertiary:#65707c;
+    --accent-strong:#a97e00; --accent-soft:#fff7d6; --accent-line:#e6b400;
+    --positive:#15803d; --positive-soft:#e6f4ec; --negative:#b91c1c; --negative-soft:#fbe9e9;
+    --warning:#b45309; --warning-soft:#fbf0dc; --neutral:#8a8f98;
+    --ink-line:#141417; --yellow-line:#b8940a; --shadow:none; --shadow-lift:none;
+  }
+  *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
+  @page{size:portrait;margin:11mm 11mm 13mm}
+  html,body{background:#fff !important}
+  body{font-size:10.5px;line-height:1.4}
+  /* drop the interactive chrome */
+  #gate,.appbar,.tabs,.tab,#pdfbtn,#theme,.iconbtn,.tt{display:none !important}
+  #app{display:block !important}
+  #p-settings{display:none !important}
+  .wrap{max-width:none;margin:0;padding:0}
+  /* one client per page; never split a client across the page start */
+  .panel{display:block !important;break-before:page;page-break-before:always}
+  #panels>.panel:first-child{break-before:auto;page-break-before:avoid}
+  .panel[hidden]{display:block !important}
+  /* keep small blocks whole across page breaks */
+  .verdict,.ins,.kpi,.chart,.funnelcard,.frow,.pendrow,tr,thead{break-inside:avoid;page-break-inside:avoid}
+  .shead,h1,.titleband{break-after:avoid;page-break-after:avoid}
+  section{margin-top:16px}
+  /* wide tables (week-over-week, top creatives) must FIT the page, never scroll off */
+  .tscroll{overflow:visible !important}
+  .cwrap,.setgrid table{min-width:0 !important}
+  table{font-size:9px !important;table-layout:auto;width:100% !important}
+  th,td{padding:6px 7px !important}
+  /* week-over-week: tighten the change-pill column + gaps so all 7 columns fit */
+  table.wow thead th:not(:first-child){padding-right:8px !important}
+  .wow .cell{grid-template-columns:auto 34px !important;gap:4px !important}
+  .wow .cell .v{font-size:9px}
+  .wow .cell .p .pill{padding:1px 3px !important;font-size:8.5px !important}
+  /* top creatives: let long ad names + tag labels wrap instead of forcing extra width */
+  .creat .cn{white-space:normal !important;word-break:break-word;font-size:9px}
+  .cwrap td:first-child,.cwrap th:first-child{white-space:normal !important;max-width:150px}
+  .tag2{white-space:normal !important;font-size:8.5px}
+  /* neutralise hover/animation and screen shadows */
+  .panel:not([hidden]){animation:none !important}
+  .card,.ins,.kpis,.chart{box-shadow:none !important}
+  .ins:hover,.chart:hover,.kpi:hover,.fbar:hover{transform:none !important;box-shadow:none !important;filter:none !important}
+  /* charts a touch shorter for paper */
+  .plot svg{height:104px !important}
+  .charts{gap:10px}
+}
 </style>
 
 <div id="gate">
@@ -233,7 +287,8 @@ table.wow thead th:not(:first-child){padding-right:77px}
   <div class="top">
     <div class="brand"><span class="sq"></span>Posted Social <small>· Monday Ads Review</small></div>
     <div class="spacer"></div>
-    <div class="stamp">ran <b>Mon Aug 10, 5:02 AM CDT</b><br>reporting week <b>Aug 3 – Aug 9</b></div>
+    <div class="stamp">ran <b>__RAN__</b><br>reporting week <b>__WEEK__</b></div>
+    <button class="pdfbtn" id="pdfbtn" title="Save the whole report as PDF — every client, each on its own page">↓ Save PDF</button>
     <button class="iconbtn" id="theme" title="Toggle light / dark" aria-label="Toggle theme">◐</button>
   </div>
   <div class="tabs" role="tablist" id="tabs"></div>
@@ -252,6 +307,7 @@ const F={
 };
 
 const CLIENTS=__CLIENTS_DATA__;
+var WK='__WEEK__';
 
 function pillHTML(d,dir){
   if(d==null) return '';
@@ -299,7 +355,7 @@ function panelHTML(c){
   var h='<div class="panel" id="p-'+c.id+'" role="tabpanel" hidden>';
   h+='<div class="titleband"><div><h1>'+c.name+' <span class="chips">'+c.chips.map(function(x){return '<span class="chip '+x[0]+'">'+x[1]+'</span>';}).join('')+'</span></h1>'+
      '<div class="subid mono">'+c.sub+'</div></div>'+
-     '<div class="wtag">showing <b>last week</b> · Aug 3 – 9<br>trends show the last 4 weeks</div></div>';
+     '<div class="wtag">showing <b>last week</b> · '+WK+'<br>trends show the last 4 weeks</div></div>';
   h+='<div class="verdict '+c.verdict.tone+'"><span class="tag">Take</span><p>'+c.verdict.html+'</p></div>';
   // analysis
   h+='<section><div class="shead"><h2>What the data says</h2><span class="hint">'+(ads?'Meta delivery signals — this client has no CRM pipeline':'Meta delivery joined to GHL outcomes')+'</span></div><div class="split">';
@@ -313,7 +369,7 @@ function panelHTML(c){
     h+=c.funnel.pending?pendingFunnel(c.funnel):taperFunnel(c.funnel);
     h+='<div class="kpis two">'+c.kpis.map(function(k){return kpiCard(k,c.leadsWk);}).join('')+'</div></div></section>';
   } else {
-    var nh=c.newCampaign?'<h2>Since launch</h2><span class="hint">first days of delivery · Aug 10–13 · no prior period yet</span>':'<h2>Last-week numbers</h2><span class="hint">last week vs the week before · ads-only — no pipeline connected</span>';
+    var nh=c.newCampaign?'<h2>Since launch</h2><span class="hint">first days of delivery · no prior period yet</span>':'<h2>Last-week numbers</h2><span class="hint">last week vs the week before · ads-only — no pipeline connected</span>';
     h+='<section><div class="shead">'+nh+'</div><div class="kpis wide">'+c.kpis.map(function(k){return kpiCard(k,c.leadsWk);}).join('')+'</div></section>';
   }
   // charts + week over week (only when there's history)
@@ -445,6 +501,27 @@ function show(id){
   window.scrollTo({top:0});
 }
 document.getElementById('theme').addEventListener('click',function(){var r=document.documentElement,cur=r.getAttribute('data-theme');r.setAttribute('data-theme',cur==='dark'?'light':cur==='light'?'dark':(matchMedia('(prefers-color-scheme:dark)').matches?'light':'dark'));setTimeout(function(){CLIENTS.forEach(renderCharts);},20);});
+
+// Save-as-PDF: reveal every client (each on its own page), force a light palette so
+// chart lines aren't white-on-white, then restore the on-screen view afterward.
+(function(){
+  var btn=document.getElementById('pdfbtn');
+  if(btn) btn.addEventListener('click',function(){window.print();});
+  var prevTheme=null;
+  window.addEventListener('beforeprint',function(){
+    var r=document.documentElement; prevTheme=r.getAttribute('data-theme');
+    r.setAttribute('data-theme','light');
+    document.querySelectorAll('.panel').forEach(function(p){p.removeAttribute('hidden');});
+    CLIENTS.forEach(renderCharts);
+  });
+  window.addEventListener('afterprint',function(){
+    var r=document.documentElement;
+    if(prevTheme===null) r.removeAttribute('data-theme'); else r.setAttribute('data-theme',prevTheme);
+    var sel=document.querySelector('.tab[aria-selected="true"]'), id=sel?sel.id.slice(2):'stlsc';
+    document.querySelectorAll('.panel').forEach(function(p){p.hidden=(p.id!=='p-'+id);});
+    CLIENTS.forEach(renderCharts);
+  });
+})();
 
 CLIENTS.forEach(renderCharts);
 show('stlsc');

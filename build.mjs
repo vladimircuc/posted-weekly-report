@@ -68,6 +68,17 @@ function build(c){
 }
 
 const clients = data.clients.map(build);
-const out = tpl.replace('__CLIENTS_DATA__', JSON.stringify(clients));
+const week = data.reportingWeek || '';
+let ran = '';
+if(data.generatedUtc){
+  try{
+    ran = new Date(data.generatedUtc).toLocaleString('en-US',{timeZone:'America/Chicago',
+      weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'});
+  }catch(e){ ran = ''; }
+}
+const out = tpl
+  .split('__CLIENTS_DATA__').join(JSON.stringify(clients))
+  .split('__WEEK__').join(week)
+  .split('__RAN__').join(ran);
 writeFileSync(new URL('./report.html', import.meta.url), out);
-console.log('report.html written —', out.length, 'chars,', clients.length, 'clients, generated', data.generatedUtc);
+console.log('report.html written —', out.length, 'chars,', clients.length, 'clients, week', JSON.stringify(week), '· ran', JSON.stringify(ran));
