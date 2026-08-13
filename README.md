@@ -1,11 +1,8 @@
 # posted-weekly-report
 
-Generator for Posted Social's internal Monday ads report (runs unattended in a Claude cloud routine).
+Rendering shell for an internal weekly ads report generator (no business data lives here).
 
-- `recipe.md` — what the cloud agent does each Monday (roster, MCP calls, GHL retry, publish + Slack).
-- `template.html` — the fixed report shell (design, charts, password gate). Contains `__CLIENTS_DATA__`.
-- `build.mjs` — deterministic generator: reads `data.json` (raw weekly numbers + analysis), computes
-  every delta / trend / week-over-week figure, writes `report.html`. No LLM arithmetic.
-- `data.example.json` — last week's real, validated data — the structural + style template to mirror.
+- `template.html` — report shell (design, charts, gate). Has a `__CLIENTS_DATA__` placeholder; contains no data.
+- `build.mjs` — deterministic renderer: reads a local `data.json`, computes deltas/trends/week-over-week, writes `report.html`.
 
-Local run: `node build.mjs` (reads `data.json`, writes `report.html`).
+Run: `node build.mjs` (expects `data.json` alongside).
