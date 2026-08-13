@@ -1,0 +1,1157 @@
+{
+ "generatedUtc": "2026-08-10T10:02:00Z",
+ "reportingWeek": "Aug 3 – Aug 9",
+ "clients": [
+  {
+   "id": "stlsc",
+   "name": "St. Louis Sports Clinic",
+   "act": "act_1074959853578156",
+   "dot": "ok",
+   "status": "active",
+   "type": "pipeline",
+   "chips": [
+    [
+     "src",
+     "Meta + GHL"
+    ],
+    [
+     "",
+     "Lead gen"
+    ]
+   ],
+   "sub": "act_1074959853578156 · Paid Ad New Patient Pipeline",
+   "verdict": {
+    "tone": "good",
+    "html": "Last week landed <b>66 leads at $22.67</b> — the best week of the month, and part of a real turnaround: over the last 30 days spend is down <b>47%</b> while cost per lead fell <b>33%</b> and frequency dropped from a fatigued <b>3.4 to 2.7</b>. The efficiency problem is fixed; the question now is whether to <b>scale spend back up</b>. <span class=\"aside\">Roster CPM rose 6% this week — this account’s gains are its own.</span>"
+   },
+   "wins": [
+    {
+     "t": "The efficiency turnaround is real",
+     "b": "Half the spend of the prior month, yet <span class=\"metric\">CPL $37→$25</span>, <span class=\"metric\">CPM $19.66→$14.74</span>, frequency <span class=\"metric\">3.4→2.7</span>. Same outcomes, far less money.",
+     "s": "ads_get_ad_entities · 30d vs prior 30d"
+    },
+    {
+     "t": "Cleanest structure on the roster",
+     "b": "Opportunity score <span class=\"metric\">100/100</span>, zero anomalies, zero delivery blockers, every live ad in one consolidated ad set.",
+     "s": "opportunity_score · anomaly_signal · errors"
+    },
+    {
+     "t": "The pipeline closes what ads send",
+     "b": "Matured cohort: <span class=\"metric\">97 → 46 booked (47%) → 23 showed → 12 sold</span>. Sold patients carry ~$1,686 each.",
+     "s": "GHL Paid Ad New Patient Pipeline"
+    },
+    {
+     "t": "Attribution is trustworthy",
+     "b": "GHL logged <span class=\"metric\">233 opportunities</span> vs Meta’s <span class=\"metric\">236 leads</span> for the same window — within 2%.",
+     "s": "GHL createdAt vs Meta · utmAdId join"
+    }
+   ],
+   "problems": [
+    {
+     "tone": "p",
+     "t": "Cheapest leads = most expensive patients",
+     "b": "<span class=\"mono\">Video_67_v17.3.1</span> costs $5 more per lead ($28 vs $23) but sells at ~10% vs ~5% → <span class=\"metric\">$268 per sold vs $423</span>. Meta’s CPL ranking hides this.",
+     "fix": "Shift a test slice of budget from v11.2.2 to v17.3.1 and judge on cost-per-sold. Small sold-n (6 vs 9) — run it as a 2-week test.",
+     "s": "utmAdId join · spend ÷ POC-Sold"
+    },
+    {
+     "tone": "pm",
+     "t": "Cheap in dollars, 60% above peer benchmark",
+     "b": "Meta puts the ad set’s cost-per-result <span class=\"metric\">60% above</span> comparable lead-gen advertisers — headroom peers are capturing.",
+     "fix": "With frequency back to 2.7, test an audience refresh / lookalike expansion, or check landing-page conversion vs peers.",
+     "s": "industry_benchmark · CPR, prospecting"
+    },
+    {
+     "tone": "pm",
+     "t": "11 paid leads stalling in early follow-up",
+     "b": "Eleven leads still open in New Leads / Manual Follow-Up 10+ days — ~<span class=\"metric\">$275</span> of paid leads idling before anyone books them.",
+     "fix": "Flag the list to the front desk for a same-day nudge. Raise in the weekly client check-in.",
+     "s": "GHL opportunity age · stages 00–02"
+    },
+    {
+     "tone": "p",
+     "t": "64% of spend on one ad, no cheap backup",
+     "b": "<span class=\"mono\">Video_67_v11.2.2</span> carries <span class=\"metric\">$3,804 of $6,428</span> (30d). Best performer, but both backups cost more per lead — a fatigue event would crater volume.",
+     "fix": "Keep 2–3 fresh challengers live at low budget so there’s always a proven next-in-line.",
+     "s": "ad-level spend share"
+    }
+   ],
+   "creatives": {
+    "cols": [
+     "Creative",
+     "Spend",
+     "Leads",
+     "CPL",
+     "Booked",
+     "Sold",
+     "$ / sold",
+     ""
+    ],
+    "rows": [
+     {
+      "name": "Video_67_v11.2.2_Ash",
+      "meta": "freq 1.97",
+      "c": [
+       "$3,804",
+       "164",
+       "$23.19",
+       "67",
+       "9",
+       "$423"
+      ],
+      "tag": [
+       "work",
+       "Workhorse · 64% spend"
+      ]
+     },
+     {
+      "name": "Video_67_v17.3.1",
+      "meta": "freq 1.64",
+      "c": [
+       "$1,607",
+       "57",
+       "$28.19",
+       "23",
+       "6",
+       "$268"
+      ],
+      "tag": [
+       "good",
+       "Best $/sold — feed it"
+      ]
+     },
+     {
+      "name": "Ashley_IceStretch_Rest",
+      "meta": "freq 1.49 · CTR 1.70%",
+      "c": [
+       "$868",
+       "30",
+       "$28.95",
+       "11",
+       "1",
+       "$868"
+      ],
+      "tag": [
+       "watch",
+       "Books, rarely sells"
+      ]
+     }
+    ]
+   },
+   "ghlLoc": "pe05G0gHIvcVk337tcO0",
+   "ghlPipe": "Paid Ad New Patient Pipeline",
+   "funnel": {
+    "leads": 97,
+    "booked": 46,
+    "showed": 23,
+    "sold": 12,
+    "bp": "47%",
+    "sp": "50%",
+    "cp": "52%",
+    "note": "Real counts from the matured cohort (leads created wk of Jul 6). 12 sold × ~$1,686 ≈ <b>$20k</b> attributed. Last week’s 66 fresh leads aren’t here yet — they haven’t had time to book. At these rates they should land near <b>31 booked → 8 sold</b>."
+   },
+   "weekly": [
+    {
+     "wk": "Jul 13 – 19",
+     "spend": 1679.63,
+     "leads": 60,
+     "cpl": 27.99,
+     "cpm": 15.56,
+     "ctr": 1.24,
+     "freq": 1.68
+    },
+    {
+     "wk": "Jul 20 – 26",
+     "spend": 1395.87,
+     "leads": 60,
+     "cpl": 23.26,
+     "cpm": 13.93,
+     "ctr": 1.3,
+     "freq": 1.62
+    },
+    {
+     "wk": "Jul 27 – Aug 2",
+     "spend": 1379.11,
+     "leads": 50,
+     "cpl": 27.58,
+     "cpm": 15.04,
+     "ctr": 1.41,
+     "freq": 1.6
+    },
+    {
+     "wk": "Aug 3 – 9",
+     "spend": 1496.42,
+     "leads": 66,
+     "cpl": 22.67,
+     "cpm": 14.62,
+     "ctr": 1.28,
+     "freq": 1.62
+    }
+   ],
+   "lowvol": false
+  },
+  {
+   "id": "ballwin",
+   "name": "Ballwin Tree Service",
+   "act": "act_1094709792623478",
+   "dot": "ok",
+   "status": "active",
+   "type": "pipeline",
+   "chips": [
+    [
+     "src",
+     "Meta + GHL"
+    ],
+    [
+     "",
+     "Lead gen · trees"
+    ]
+   ],
+   "sub": "act_1094709792623478 · Lead Pipeline",
+   "verdict": {
+    "tone": "good",
+    "html": "Scaling, and mostly working. Over 30 days spend rose <b>11%</b> and pulled <b>14% more leads</b> at a slightly lower CPL (<b>$30.74</b>), and last week set the reach and lead high (47 leads, 44.5k reach). The catch: <b>78% of spend rides on one ad</b>, <span class=\"mono\">Video_Quote_v1.1.1</span>, which Meta now flags as <b>“below-average engagement — not spurring interest.”</b> Still the cheapest lead source, but the only one at scale and showing fatigue signs. Line up a challenger before it tires."
+   },
+   "wins": [
+    {
+     "t": "Scaling efficiently",
+     "b": "Over 30 days: spend <span class=\"metric\">+11%</span>, leads <span class=\"metric\">+14%</span>, CPL <span class=\"metric\">−2.4%</span>, reach <span class=\"metric\">+7.6%</span>. Last week set the reach and lead high — more budget is still buying more leads.",
+     "s": "ads_get_ad_entities · 30d vs prior 30d"
+    },
+    {
+     "t": "Clean account, real pipeline value",
+     "b": "No delivery errors, no anomalies, opportunity score <span class=\"metric\">79</span>. And <span class=\"metric\">$38,800</span> of quotes are open in the Lead Pipeline right now (6 deals, $1.9k–$15k) — real money in flight.",
+     "s": "ads_get_errors · GHL monetaryValue"
+    }
+   ],
+   "problems": [
+    {
+     "tone": "p",
+     "t": "78% of spend on one fatiguing ad",
+     "b": "<span class=\"mono\">Video_Quote_v1.1.1</span> is <span class=\"metric\">$4,238 of $5,809</span> and drove ~150 of ~186 leads — but Meta ranks its engagement <b>Below Average (bottom 35%)</b>, “not spurring interest.” No proven backup runs at scale.",
+     "fix": "Build and launch 2–3 challengers now at low budget, so there’s a proven next-in-line before the workhorse craters.",
+     "s": "ad-level spend share · auction_ranking"
+    },
+    {
+     "tone": "pm",
+     "t": "CPL rising as budget scales",
+     "b": "Last week spend <span class=\"metric\">+16%</span> but CPL <span class=\"metric\">+8.6%</span> and reach <span class=\"metric\">+27%</span> — the extra budget bought reach faster than leads. A sign the audience may be starting to tap out.",
+     "fix": "Watch the marginal CPL as you scale; if it keeps climbing, widen or refresh the audience rather than just adding budget.",
+     "s": "weekly PoP"
+    },
+    {
+     "tone": "pm",
+     "t": "CAPI/CRM connection unimplemented",
+     "b": "One prospecting adset runs <span class=\"metric\">47.5% above</span> the CPR benchmark, and Meta’s top recommendation — connect the Conversions API — estimates <span class=\"metric\">−24%</span> cost per quality lead.",
+     "fix": "Wire up CAPI to the Lead Pipeline you already run; it feeds Meta better conversion signal and directly targets the rising CPL.",
+     "s": "opportunity_score · industry_benchmark"
+    }
+   ],
+   "leadsWk": 47,
+   "creatives": {
+    "cols": [
+     "Creative",
+     "Status",
+     "Spend",
+     "Leads",
+     "CPL",
+     "Freq",
+     "CTR",
+     ""
+    ],
+    "rows": [
+     {
+      "name": "Video_Quote_v1.1.1",
+      "meta": "120250272412520285",
+      "c": [
+       "Active",
+       "$4,238",
+       "151",
+       "$28.07",
+       "2.22",
+       "1.35%"
+      ],
+      "tag": [
+       "work",
+       "Workhorse · 78% spend"
+      ]
+     },
+     {
+      "name": "(used)Video_Quote_v1",
+      "meta": "120250272412380285",
+      "c": [
+       "Paused",
+       "$861",
+       "24",
+       "$35.89",
+       "1.81",
+       "0.93%"
+      ],
+      "tag": [
+       "paused",
+       ""
+      ]
+     },
+     {
+      "name": "Static_Callout_v7",
+      "meta": "120250272412690285",
+      "c": [
+       "Active",
+       "$78",
+       "3",
+       "$26.10",
+       "2.05",
+       "1.77%"
+      ],
+      "tag": [
+       "watch",
+       "Fresh · low spend"
+      ]
+     }
+    ]
+   },
+   "ghlLoc": "cM2gIu9EA0CHmXFB3rmU",
+   "ghlPipe": "Lead Pipeline",
+   "funnel": {
+    "pending": true,
+    "pipeline": "Lead Pipeline",
+    "stages": "Leads → Request → Quote Sent → Won",
+    "flight": "$38,800 in open quotes",
+    "note": "GHL pipeline is wired (19 of 20 recent leads trace to Video_Quote_v1.1.1). The matured funnel and cost-per-sold populate on the live Monday run — this preview couldn’t page GHL history (a serialization hiccup that didn’t hit St. Louis)."
+   },
+   "weekly": [
+    {
+     "wk": "Jul 13 – 19",
+     "spend": 1226.29,
+     "leads": 42,
+     "cpl": 29.2,
+     "cpm": 21.25,
+     "ctr": 1.23,
+     "freq": 1.76
+    },
+    {
+     "wk": "Jul 20 – 26",
+     "spend": 1251.05,
+     "leads": 39,
+     "cpl": 32.08,
+     "cpm": 22.08,
+     "ctr": 1.22,
+     "freq": 1.79
+    },
+    {
+     "wk": "Jul 27 – Aug 2",
+     "spend": 1271.9,
+     "leads": 44,
+     "cpl": 28.91,
+     "cpm": 22.4,
+     "ctr": 1.32,
+     "freq": 1.63
+    },
+    {
+     "wk": "Aug 3 – 9",
+     "spend": 1475.58,
+     "leads": 47,
+     "cpl": 31.4,
+     "cpm": 22.22,
+     "ctr": 1.32,
+     "freq": 1.49
+    }
+   ],
+   "lowvol": false
+  },
+  {
+   "id": "ncorp",
+   "name": "NEUAGE Corp",
+   "act": "act_743171384286711",
+   "dot": "bad",
+   "status": "active",
+   "type": "ads",
+   "chips": [
+    [
+     "",
+     "Meta only — no pipeline"
+    ],
+    [
+     "",
+     "Lead gen · TRT/HRT"
+    ]
+   ],
+   "sub": "act_743171384286711 · Neuage Health + Wellness (Corporate)",
+   "verdict": {
+    "tone": "bad",
+    "html": "This account is <b>saturating a tiny audience</b>. Reach was flat month-over-month (~12,700) while frequency climbed to <b>4.77</b> and CTR halved (<b>3.05% → 1.46%</b>). Cost per lead is <b>$133</b> on just 16 leads, and the error feed shows <b>broken pixel access on 9 ads plus a Page ad-restriction</b> — a prime suspect for the collapsed lead tracking. <b>Fix delivery and the audience before adding budget.</b>"
+   },
+   "wins": [
+    {
+     "t": "CPL and CPM improved off a bad base",
+     "b": "Vs prior month, <span class=\"metric\">CPL $234→$133 (−43%)</span> and <span class=\"metric\">CPM $48→$35 (−27%)</span>. Direction is right, even if the level is still high.",
+     "s": "ads_get_ad_entities · 30d vs prior 30d"
+    },
+    {
+     "t": "No auction-quality penalty flagged",
+     "b": "Meta returned no ranking/anomaly warnings and opportunity score reads <span class=\"metric\">100</span> — the problems here are audience & setup, not creative quality.",
+     "s": "opportunity_score · auction_ranking"
+    }
+   ],
+   "problems": [
+    {
+     "tone": "p",
+     "t": "The audience is saturated — reach is maxed out",
+     "b": "Reach barely moved (12,709 → 12,722) while frequency jumped <span class=\"metric\">3.4 → 4.77</span> and CTR halved to 1.46%. You’re showing the same ~12,700 people the same ads nearly 5×.",
+     "fix": "Expand the audience — new lookalikes, broader geo/interests, or a fresh prospecting audience. More budget on this audience just raises frequency.",
+     "s": "reach vs frequency · 30d vs prior"
+    },
+    {
+     "tone": "p",
+     "t": "Delivery is broken on part of the account",
+     "b": "The error feed shows <span class=\"metric\">9 ads without access to pixel 299…750</span> and a <b>Page restricted from advertising</b>. Broken conversion tracking is a prime suspect for the collapsed lead counts.",
+     "fix": "Fix pixel access (or rebuild those campaigns per Meta’s note) and resolve the Page restriction. Verify which are on live vs paused campaigns first.",
+     "s": "ads_get_errors"
+    },
+    {
+     "tone": "pm",
+     "t": "$133 cost per lead on 16 leads",
+     "b": "High cost, low volume. Lead tracking is unreliable given the pixel issue, so treat CPL as a ceiling, not a clean number.",
+     "fix": "Once pixel + audience are fixed, re-baseline. Don’t scale spend against a broken measurement setup.",
+     "s": "30d account · lead / cost_per_lead"
+    },
+    {
+     "tone": "pm",
+     "t": "Heavy creative churn, only 1 ad live",
+     "b": "Nine of the top-10 ads by spend are already <b>paused</b>; only <span class=\"mono\">Video_TRT100_v5.1.1</span> is active (and spent $75). Lots of testing, nothing settled.",
+     "fix": "Lock in 2–3 stable creatives once delivery is fixed, rather than cycling variants weekly.",
+     "s": "ad-level effective_status"
+    }
+   ],
+   "leadsWk": 2,
+   "creatives": {
+    "cols": [
+     "Creative",
+     "Status",
+     "Spend",
+     "Leads",
+     "CPL",
+     "Freq",
+     "CTR",
+     ""
+    ],
+    "rows": [
+     {
+      "name": "Static_Callout_v5",
+      "meta": "120243080975050554",
+      "c": [
+       "Paused",
+       "$349",
+       "6",
+       "$58.10",
+       "5.14",
+       "0.91%"
+      ],
+      "tag": [
+       "paused",
+       ""
+      ]
+     },
+     {
+      "name": "Video_TRT100_v5.1.2",
+      "meta": "120248697578740554",
+      "c": [
+       "Paused",
+       "$207",
+       "1",
+       "$206.76",
+       "1.74",
+       "2.54%"
+      ],
+      "tag": [
+       "paused",
+       ""
+      ]
+     },
+     {
+      "name": "Video_TRT100_v5.1.1",
+      "meta": "120245917599610554",
+      "c": [
+       "Active",
+       "$75",
+       "1",
+       "$75.35",
+       "1.50",
+       "1.71%"
+      ],
+      "tag": [
+       "good",
+       "Only live ad"
+      ]
+     }
+    ]
+   },
+   "weekly": [
+    {
+     "wk": "Jul 13 – 19",
+     "spend": 99.64,
+     "leads": 0,
+     "cpl": null,
+     "cpm": 41.64,
+     "ctr": 1.3,
+     "freq": 1.8
+    },
+    {
+     "wk": "Jul 20 – 26",
+     "spend": 421.58,
+     "leads": 8,
+     "cpl": 52.7,
+     "cpm": 17.77,
+     "ctr": 0.97,
+     "freq": 4.85
+    },
+    {
+     "wk": "Jul 27 – Aug 2",
+     "spend": 479.78,
+     "leads": 1,
+     "cpl": 479.78,
+     "cpm": 46.77,
+     "ctr": 1.98,
+     "freq": 2.57
+    },
+    {
+     "wk": "Aug 3 – 9",
+     "spend": 510.32,
+     "leads": 2,
+     "cpl": 255.16,
+     "cpm": 49.56,
+     "ctr": 1.82,
+     "freq": 3.03
+    }
+   ],
+   "lowvol": true
+  },
+  {
+   "id": "nleaw",
+   "name": "NEUAGE Leawood",
+   "act": "act_409030241842556",
+   "dot": "warn",
+   "status": "active",
+   "type": "ads",
+   "chips": [
+    [
+     "",
+     "Meta only — no pipeline"
+    ],
+    [
+     "",
+     "Lead gen · HRT"
+    ]
+   ],
+   "sub": "act_409030241842556 · Neuage Health + Wellness - Leawood (Kilcullin)",
+   "verdict": {
+    "tone": "warn",
+    "html": "A small, <b>expensive</b> account. CPM is <b>$94.74</b> — roughly <b>6× St. Louis</b> — and rising ($77→$116 across the month), driving CPL to <b>$165</b> on just 6 leads. Structurally it’s clean (score 97, no errors) and CTR is healthy at ~2.6%, so the problem is a <b>tiny, costly audience</b>, not the creative. Leawood is an affluent niche geo — either accept the premium or widen the net."
+   },
+   "wins": [
+    {
+     "t": "Engagement is genuinely good",
+     "b": "CTR held <span class=\"metric\">~2.6–2.9%</span> (roughly 2× St. Louis) and frequency is healthy at <span class=\"metric\">~1.8–3.0</span>. People who see the ads respond — the creative works.",
+     "s": "ads_get_ad_entities · weekly"
+    },
+    {
+     "t": "Structurally clean",
+     "b": "Opportunity score <span class=\"metric\">97</span>, no anomalies, no delivery errors. Only a minor A+ enhancements suggestion on the live static.",
+     "s": "opportunity_score · errors"
+    }
+   ],
+   "problems": [
+    {
+     "tone": "p",
+     "t": "CPM is ~6× normal and climbing",
+     "b": "<span class=\"metric\">$94.74</span> vs ~$15 at St. Louis, and it ran $77 → $78 → $116 → $111 across the four weeks on a tiny <span class=\"metric\">3,483</span> reach. A small, expensive audience is the whole story.",
+     "fix": "Widen geo beyond Leawood or broaden the audience to bring CPM down — or explicitly accept the premium as the cost of a high-value niche. Decide deliberately.",
+     "s": "cpm · reach · weekly"
+    },
+    {
+     "tone": "pm",
+     "t": "CPL $165 and rising 34% MoM",
+     "b": "On <span class=\"metric\">6 leads</span>, so treat the exact number loosely — but the direction (up) tracks the CPM problem, not a conversion problem.",
+     "fix": "The CPM/audience lever above is the fix. Also worth pressure-testing the landing page for this niche.",
+     "s": "30d vs prior 30d"
+    },
+    {
+     "tone": "pm",
+     "t": "The best creative is paused",
+     "b": "<span class=\"mono\">Video_HRT100_v1.1.2</span> booked the cheapest leads ($48.70, 3 leads) but is <b>paused</b>; the two live ads have no tracked leads yet.",
+     "fix": "Consider reactivating the proven winner instead of running unproven actives.",
+     "s": "ad-level · effective_status"
+    }
+   ],
+   "leadsWk": 1,
+   "creatives": {
+    "cols": [
+     "Creative",
+     "Status",
+     "Spend",
+     "Leads",
+     "CPL",
+     "Freq",
+     "CTR",
+     ""
+    ],
+    "rows": [
+     {
+      "name": "Video_HRT100_v1.1.2",
+      "meta": "120245004389900678",
+      "c": [
+       "Paused",
+       "$146",
+       "3",
+       "$48.70",
+       "1.67",
+       "2.67%"
+      ],
+      "tag": [
+       "good",
+       "Cheapest leads — paused"
+      ]
+     },
+     {
+      "name": "Video_HRT100_v4.1.1",
+      "meta": "120244209633650678",
+      "c": [
+       "Paused",
+       "$170",
+       "1",
+       "$170.42",
+       "1.65",
+       "2.71%"
+      ],
+      "tag": [
+       "paused",
+       ""
+      ]
+     },
+     {
+      "name": "Static_HRT100_v7",
+      "meta": "120244209837090678",
+      "c": [
+       "Active",
+       "$50",
+       "—",
+       "—",
+       "2.10",
+       "2.88%"
+      ],
+      "tag": [
+       "watch",
+       "Live · no leads yet"
+      ]
+     }
+    ]
+   },
+   "weekly": [
+    {
+     "wk": "Jul 13 – 19",
+     "spend": 231.82,
+     "leads": 3,
+     "cpl": 77.27,
+     "cpm": 76.84,
+     "ctr": 2.62,
+     "freq": 1.97
+    },
+    {
+     "wk": "Jul 20 – 26",
+     "spend": 220.03,
+     "leads": 1,
+     "cpl": 220.03,
+     "cpm": 78.25,
+     "ctr": 2.45,
+     "freq": 2.2
+    },
+    {
+     "wk": "Jul 27 – Aug 2",
+     "spend": 242.17,
+     "leads": 1,
+     "cpl": 242.17,
+     "cpm": 115.82,
+     "ctr": 2.63,
+     "freq": 1.9
+    },
+    {
+     "wk": "Aug 3 – 9",
+     "spend": 230.83,
+     "leads": 1,
+     "cpl": 230.83,
+     "cpm": 111.4,
+     "ctr": 2.9,
+     "freq": 1.78
+    }
+   ],
+   "lowvol": true
+  },
+  {
+   "id": "trinity",
+   "name": "Trinity Pools",
+   "act": "act_2382637378894955",
+   "dot": "warn",
+   "status": "active",
+   "type": "ads",
+   "chips": [
+    [
+     "",
+     "Meta only — no pipeline"
+    ],
+    [
+     "",
+     "Lead gen · pools"
+    ]
+   ],
+   "sub": "act_2382637378894955 · Trinity Pools",
+   "verdict": {
+    "tone": "warn",
+    "html": "Steady, but slipping and mis-allocated. Over 30 days it’s fine — CPL <b>$24 (−2.4%)</b>, CPM down 8%, reach up — but last week softened to <b>11 leads at $32</b>, and CPL has crept up four weeks running ($19 → $32). The real issue is budget: <b>Static_Quote_v1 eats 64% of spend</b> at the worst CTR and CPL, while the cheap <span class=\"mono\">Carousel_Quote_v2</span> ($20 CPL, 2.77% CTR) is starved. Rebalance before adding spend. <span class=\"aside\">Low weekly volume — read single weeks loosely.</span>"
+   },
+   "wins": [
+    {
+     "t": "30-day fundamentals are healthy",
+     "b": "On flat spend: CPM <span class=\"metric\">−7.6%</span>, reach <span class=\"metric\">+7.9%</span>, CPL <span class=\"metric\">−2.4%</span>. You’re buying more, cheaper reach than last month.",
+     "s": "ads_get_ad_entities · 30d vs prior 30d"
+    },
+    {
+     "t": "The carousel is the efficiency winner",
+     "b": "<span class=\"mono\">Carousel_Quote_v2</span> — <span class=\"metric\">2.77% CTR</span> and <span class=\"metric\">$20.04 CPL</span> (best in the account) — on only ~21% of spend.",
+     "s": "ad-level leaderboard"
+    }
+   ],
+   "problems": [
+    {
+     "tone": "p",
+     "t": "64% of budget on the weakest ad",
+     "b": "<span class=\"mono\">Static_Quote_v1</span> takes <span class=\"metric\">$950 (64%)</span> at the lowest CTR (1.99%) and highest CPL ($26.39) of the delivering ads — dragging account CTR down 10.5% over 30d.",
+     "fix": "Shift budget toward the carousel and build carousel variants; cap or refresh v1. This is the single biggest lever here.",
+     "s": "ad-level spend share"
+    },
+    {
+     "tone": "pm",
+     "t": "CPL drifting up four weeks running",
+     "b": "Weekly CPL went <span class=\"metric\">$19 → $22 → $24 → $32</span>. Even discounting the small-n weekly swing, the direction is consistent.",
+     "fix": "Watch next week; if the 30-day CPL crosses ~$25 sustained, rotate in fresh creative (the Reels 9:16 idea Meta suggests is low-lift).",
+     "s": "weekly trend"
+    },
+    {
+     "tone": "pm",
+     "t": "Best-value lever unimplemented",
+     "b": "Opportunity score <span class=\"metric\">80</span>; Meta’s top recommendation is a CRM/Conversions-API connection estimated at <span class=\"metric\">−24%</span> cost per quality lead.",
+     "fix": "Connect CAPI — it targets exactly the rising-CPL problem and is the highest-scored opportunity.",
+     "s": "opportunity_score"
+    }
+   ],
+   "leadsWk": 11,
+   "creatives": {
+    "cols": [
+     "Creative",
+     "Status",
+     "Spend",
+     "Leads",
+     "CPL",
+     "Freq",
+     "CTR",
+     ""
+    ],
+    "rows": [
+     {
+      "name": "Static_Quote_v1",
+      "meta": "120250024093620428",
+      "c": [
+       "Active",
+       "$950",
+       "36",
+       "$26.39",
+       "2.16",
+       "1.99%"
+      ],
+      "tag": [
+       "watch",
+       "64% spend · weakest CPL"
+      ]
+     },
+     {
+      "name": "Carousel_Quote_v2",
+      "meta": "120250024093650428",
+      "c": [
+       "Active",
+       "$321",
+       "16",
+       "$20.04",
+       "2.43",
+       "2.77%"
+      ],
+      "tag": [
+       "good",
+       "Best CPL — feed it"
+      ]
+     },
+     {
+      "name": "(used)Static_Quote_v8",
+      "meta": "120253705365270428",
+      "c": [
+       "Paused",
+       "$234",
+       "10",
+       "$23.41",
+       "1.98",
+       "2.28%"
+      ],
+      "tag": [
+       "paused",
+       ""
+      ]
+     }
+    ]
+   },
+   "weekly": [
+    {
+     "wk": "Jul 13 – 19",
+     "spend": 349.01,
+     "leads": 18,
+     "cpl": 19.39,
+     "cpm": 19.91,
+     "ctr": 2.2,
+     "freq": 1.93
+    },
+    {
+     "wk": "Jul 20 – 26",
+     "spend": 352.15,
+     "leads": 16,
+     "cpl": 22.01,
+     "cpm": 20.88,
+     "ctr": 2.1,
+     "freq": 1.73
+    },
+    {
+     "wk": "Jul 27 – Aug 2",
+     "spend": 352.8,
+     "leads": 15,
+     "cpl": 23.52,
+     "cpm": 19.73,
+     "ctr": 2.34,
+     "freq": 1.81
+    },
+    {
+     "wk": "Aug 3 – 9",
+     "spend": 354.19,
+     "leads": 11,
+     "cpl": 32.2,
+     "cpm": 20.69,
+     "ctr": 2.02,
+     "freq": 1.7
+    }
+   ],
+   "lowvol": false
+  },
+  {
+   "id": "varble",
+   "name": "Varble Orthodontics",
+   "act": "act_1274718994214501",
+   "dot": "warn",
+   "status": "active",
+   "type": "pipeline",
+   "chips": [
+    [
+     "src",
+     "Meta + GHL"
+    ],
+    [
+     "",
+     "Lead gen · ortho"
+    ]
+   ],
+   "sub": "act_1274718994214501 · Meta Ad Pipeline",
+   "verdict": {
+    "tone": "warn",
+    "html": "Small and getting pricier. Spend held flat month-over-month but leads fell <b>37%</b> and CPL jumped ~<b>60% to $103</b> — driven by a 23% impression drop and 29% CPM inflation, not conversion (CTR actually improved). Volume is low (<b>7 leads/week</b>), so read weekly numbers loosely. Two bright spots keep it out of the red: Meta scores it <b>98/100</b> with a prospecting audience running <b>235% below</b> the CPR benchmark, and a freshly-launched creative is already driving CRM opportunities Meta’s attribution hasn’t caught up to."
+   },
+   "wins": [
+    {
+     "t": "Structurally excellent, benchmark standout",
+     "b": "Opportunity score <span class=\"metric\">98/100</span>, no anomalies, no errors — and the prospecting adset runs <span class=\"metric\">235% below</span> peer CPR (results far cheaper than the industry cohort).",
+     "s": "opportunity_score · industry_benchmark"
+    },
+    {
+     "t": "New creative already working in the CRM",
+     "b": "<span class=\"mono\">vAI1.3.1</span> drove <span class=\"metric\">4 of 5</span> recent pipeline opportunities even though Meta still reports its leads as “Not available” — attribution lags the real result. Don’t judge the fresh creatives on Meta’s lead column yet.",
+     "s": "GHL attribution · utmAdId"
+    }
+   ],
+   "problems": [
+    {
+     "tone": "p",
+     "t": "CPL up ~60% month over month",
+     "b": "Leads <span class=\"metric\">−37%</span> ($64 → $103 CPL) on flat spend — from a <span class=\"metric\">23% impression drop</span> and <span class=\"metric\">29% CPM</span> rise (reach −19%). CTR actually improved, so this is delivery, not creative.",
+     "fix": "The audience/delivery narrowed — refresh or widen the audience to bring CPM back down. The lever is reach, not the ads.",
+     "s": "30d vs prior 30d"
+    },
+    {
+     "tone": "pm",
+     "t": "The proven creatives are paused",
+     "b": "<span class=\"mono\">vU9.2.2</span> ($86 CPL) and <span class=\"mono\">vU11.2.1</span> ($92) — the cheapest leads — are off, while unproven fresh ads carry delivery.",
+     "fix": "Bring a proven winner back alongside the new tests instead of running only unproven creative.",
+     "s": "ad-level · effective_status"
+    },
+    {
+     "tone": "pm",
+     "t": "Low volume — judge on 30 days",
+     "b": "At <span class=\"metric\">7 leads/week</span> weekly swings are noise, and the account relaunched around Jul 20 (week 1 spent just $17), so the ramp distorts week-over-week too.",
+     "fix": "Hold the creative tests running; don’t react to single-week moves.",
+     "s": "weekly trend"
+    }
+   ],
+   "leadsWk": 7,
+   "creatives": {
+    "cols": [
+     "Creative",
+     "Status",
+     "Spend",
+     "Leads",
+     "CPL",
+     "Freq",
+     "CTR",
+     ""
+    ],
+    "rows": [
+     {
+      "name": "(used)Video_vU9.2.2",
+      "meta": "120247155977370225",
+      "c": [
+       "Paused",
+       "$344",
+       "4",
+       "$85.99",
+       "1.58",
+       "1.09%"
+      ],
+      "tag": [
+       "good",
+       "Cheapest lead — paused"
+      ]
+     },
+     {
+      "name": "(used)Video_vU11.2.1",
+      "meta": "120247155977390225",
+      "c": [
+       "Paused",
+       "$367",
+       "4",
+       "$91.86",
+       "1.68",
+       "0.99%"
+      ],
+      "tag": [
+       "paused",
+       ""
+      ]
+     },
+     {
+      "name": "Video_vAI1.3.1",
+      "meta": "120243245170140225",
+      "c": [
+       "Active",
+       "$45",
+       "—",
+       "—",
+       "1.35",
+       "1.69%"
+      ],
+      "tag": [
+       "watch",
+       "Live · driving CRM opps"
+      ]
+     }
+    ]
+   },
+   "ghlLoc": "NchMBuPj77FSNeXz3SYz",
+   "ghlPipe": "Meta Ad Pipeline",
+   "funnel": {
+    "pending": true,
+    "pipeline": "Meta Ad Pipeline",
+    "stages": "Leads → Appt Booked → Consult → Conversion",
+    "flight": "low volume — few open opps",
+    "note": "GHL pipeline is wired (fresh creative vAI1.3.1 is already driving opps here). Matured funnel + cost-per-sold populate on the live Monday run — this preview couldn’t page GHL history, and volume is low regardless."
+   },
+   "weekly": [
+    {
+     "wk": "Jul 13 – 19",
+     "spend": 16.87,
+     "leads": null,
+     "cpl": null,
+     "cpm": 36.05,
+     "ctr": 1.07,
+     "freq": 1.49
+    },
+    {
+     "wk": "Jul 20 – 26",
+     "spend": 411.2,
+     "leads": 3,
+     "cpl": 137.07,
+     "cpm": 30.92,
+     "ctr": 1.49,
+     "freq": 1.93
+    },
+    {
+     "wk": "Jul 27 – Aug 2",
+     "spend": 828.48,
+     "leads": 7,
+     "cpl": 118.35,
+     "cpm": 28.4,
+     "ctr": 1.07,
+     "freq": 2.14
+    },
+    {
+     "wk": "Aug 3 – 9",
+     "spend": 855.93,
+     "leads": 7,
+     "cpl": 122.28,
+     "cpm": 30.25,
+     "ctr": 1.17,
+     "freq": 2.01
+    }
+   ],
+   "lowvol": true
+  },
+  {
+   "id": "posted",
+   "name": "Posted Social",
+   "act": "act_1252617339464304",
+   "dot": "off",
+   "status": "active",
+   "type": "ads",
+   "chips": [
+    [
+     "",
+     "Meta only · our own"
+    ],
+    [
+     "",
+     "Leads campaign only"
+    ]
+   ],
+   "sub": "act_1252617339464304 · PostedSocial_PostedSocial_Leads_8/7/26 — leads campaign only (awareness campaigns excluded)",
+   "verdict": {
+    "tone": "warn",
+    "html": "Just launched — first delivery <b>Aug 10</b>, so this is a 4-day read, not a verdict. So far: <b>$448</b> spent, <b>5 leads at ~$90</b>, testing two statics. Early CTR is healthy (<b>2.18%</b>) but CPM is high (<b>$82</b>) — expected for a cold B2B audience at launch. Too new to trend; next Monday is the first real week. <span class=\"aside\">Tracking only the leads campaign — the account’s awareness campaigns are excluded.</span>"
+   },
+   "wins": [
+    {
+     "t": "Healthy early engagement",
+     "b": "CTR <span class=\"metric\">2.18%</span> in the first days — people are clicking. One creative, <span class=\"mono\">WebsiteGetsYouCustomers</span>, is already at <span class=\"metric\">$73.86</span> CPL despite a $142 CPM.",
+     "s": "ad-level · since launch"
+    },
+    {
+     "t": "Clean launch",
+     "b": "Both active statics delivering, no errors, frequency low (<span class=\"metric\">1.8</span>) — plenty of room to run before fatigue.",
+     "s": "ads_get_ad_entities"
+    }
+   ],
+   "problems": [
+    {
+     "tone": "pm",
+     "t": "CPM is high — $82",
+     "b": "Normal for a cold, narrow B2B audience at launch, but it’s what drives the ~$90 CPL. <span class=\"mono\">WebsiteGetsYouCustomers</span> is running a <span class=\"metric\">$142</span> CPM.",
+     "fix": "Give it a week to clear the learning phase; if CPM stays above ~$80, widen the audience or test a broader interest set.",
+     "s": "cpm · since launch"
+    },
+    {
+     "tone": "pm",
+     "t": "Too little data to judge",
+     "b": "<span class=\"metric\">5 leads</span> across 4 days. Any per-creative or CPL read is provisional right now.",
+     "fix": "Hold both statics running; make the first real call next Monday with a full week in hand.",
+     "s": "volume"
+    }
+   ],
+   "leadsWk": 5,
+   "creatives": {
+    "cols": [
+     "Creative",
+     "Status",
+     "Spend",
+     "Leads",
+     "CPL",
+     "CPM",
+     "CTR",
+     ""
+    ],
+    "rows": [
+     {
+      "name": "Static_WebsiteGetsYouCustomers_v1.0",
+      "meta": "120249233759460467",
+      "c": [
+       "Active",
+       "$222",
+       "3",
+       "$73.86",
+       "$141.77",
+       "1.86%"
+      ],
+      "tag": [
+       "good",
+       "Cheapest lead so far"
+      ]
+     },
+     {
+      "name": "Static_ARealTeam_v1.0",
+      "meta": "120249233759470467",
+      "c": [
+       "Active",
+       "$227",
+       "2",
+       "$113.26",
+       "$58.25",
+       "2.31%"
+      ],
+      "tag": [
+       "watch",
+       "Best CTR, pricier lead"
+      ]
+     }
+    ]
+   },
+   "newCampaign": true,
+   "launchNote": "This campaign first delivered Aug 10, 2026 — everything above is since-launch (Aug 10–13). The 4-week trend and week-over-week views need a couple of completed weeks and will build over the coming Mondays. First full-week read: next Monday.",
+   "kpis": [
+    {
+     "l": "Spend",
+     "fmt": "money0",
+     "v": 448,
+     "prior": null
+    },
+    {
+     "l": "Leads",
+     "fmt": "int",
+     "v": 5,
+     "prior": null
+    },
+    {
+     "l": "Cost / lead",
+     "fmt": "money2",
+     "v": 89.62,
+     "prior": null
+    },
+    {
+     "l": "CPM",
+     "fmt": "money2",
+     "v": 82.19,
+     "prior": null
+    },
+    {
+     "l": "Link CTR",
+     "fmt": "pct2",
+     "v": 2.18,
+     "prior": null
+    },
+    {
+     "l": "Frequency",
+     "fmt": "dec2",
+     "v": 1.84,
+     "prior": null
+    }
+   ]
+  }
+ ]
+}

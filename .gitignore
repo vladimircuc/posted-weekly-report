@@ -1,0 +1,6 @@
+report.html
+_*.txt
+_*.js
+gen_*.png
+node_modules/
+data.json
