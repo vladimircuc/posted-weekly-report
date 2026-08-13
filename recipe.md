@@ -14,19 +14,27 @@ weekly buckets = the 4 completed weeks ending LAST_SUN. Weekly Meta pull: one ca
 `time_range:{since:LAST_SUN-27d, until:LAST_SUN}` → 4 rows oldest→newest, label "Mon D – D".
 30d = `date_preset:"last_30d"`; prior-30d = the 30 days before that (for the verdict's MoM facts).
 
-## 1. Roster
+## 1. Roster & campaign scoping (IMPORTANT)
 The runner lists every account: `id, name, Meta act (numeric), type (pipeline|ads), GHL location, GHL
-pipeline id`. One account is **campaign-scoped** — for it, add `level:"campaign"` and
-`filtering:[{"field":"campaign.id","operator":"IN","value":["<CAMPAIGN_ID from runner>"]}]` to EVERY Meta
-call, and never report the whole account. If a campaign has <2 completed weeks of delivery, mark it
-`newCampaign:true` (see Appendix).
+pipeline id`. **Report ONLY the currently-RUNNING lead campaign(s) for each account — never pull at
+`level:"ad_account"`, because that sweeps in paused/stopped campaigns' old spend.**
+
+For EACH account, first discover the live campaign(s):
+- Pull `level:"campaign"`, `date_preset:"last_30d"`, fields `["id","name","objective","effective_status","amount_spent"]`.
+- Keep campaigns where `effective_status` == `ACTIVE` **and** `objective` == `OUTCOME_LEADS`. Collect their ids → `ACTIVE_IDS`.
+- One account is pre-pinned by the runner (Posted Social) to a single campaign id — for it use ONLY that id and ignore everything else.
+- If an account has no active lead campaign, mark it paused/skipped in the report (dot `off`, a one-line note) and do not pull metrics for it.
+
+Then scope EVERY Meta metric pull to `ACTIVE_IDS`: `level:"campaign"` + `filtering:[{"field":"campaign.id","operator":"IN","value":ACTIVE_IDS}]`. Usually there is ONE active lead campaign per client; if there are several, the campaign-level weekly returns one row-set per campaign — SUM them per week. If a scoped campaign has <2 completed weeks of delivery, mark that client `newCampaign:true` (see Appendix).
 
 ## 2. Meta pulls per account — `mcp__Meta_Ads__ads_get_ad_entities` (+ insight tools)
-Load via ToolSearch. For each account (`level:"ad_account"`, or campaign-scoped as above):
+Load via ToolSearch. Every pull is campaign-scoped to `ACTIVE_IDS` (Section 1). Do NOT pass
+`client_conversation_id` to `ads_insights_auction_ranking_benchmarks` or `ads_insights_industry_benchmark`
+— those tools reject it. For each account:
 1. Weekly — `time_range:{since,until}`, `time_increment:"7"`, fields `["amount_spent","impressions","clicks","ctr","cpc","cpm","reach","frequency","lead","cost_per_lead"]` → 4 rows.
 2. 30d — `date_preset:"last_30d"`; 3. Prior-30d — `time_range` of the previous 30 days (same fields).
-4. Creatives — `level:"ad"`, `time_range` last ~30d, `sort:"amount_spent_descending"`, `limit:12`, fields incl `effective_status`.
-5. `ads_get_opportunity_score`, `ads_insights_anomaly_signal`, `ads_insights_auction_ranking_benchmarks`(last_7d), `ads_insights_industry_benchmark`(last_30d, CPR), `ads_get_errors`([act]).
+4. Creatives — `level:"ad"`, `time_range` last ~30d, `sort:"amount_spent_descending"`, `limit:12`, fields incl `effective_status`, **filtered to the running campaign(s)**: `filtering:[{"field":"ad.campaign_id","operator":"IN","value":ACTIVE_IDS}]`.
+5. `ads_get_opportunity_score` (account-level only — note it reflects the whole account), `ads_insights_anomaly_signal`, `ads_insights_auction_ranking_benchmarks`(last_7d), `ads_insights_industry_benchmark`(last_30d, CPR), `ads_get_errors`. Pass `entity_ids:ACTIVE_IDS` to scope these to the running campaign(s) where the tool accepts `entity_ids`.
 Parse strings: `"$1,234.56 USD"`→1234.56, `"1.30%"`→1.30, `"Not available"`→null. For the CPR benchmark, "below benchmark" = cheaper than peers = GOOD.
 
 ## 3. GHL (pipeline clients only) — `mcp__GHL_MCP__execute_operation`
@@ -38,8 +46,23 @@ Parse strings: `"$1,234.56 USD"`→1234.56, `"1.30%"`→1.30, `"Not available"`�
 ## 4. data.json schema
 `{generatedUtc, reportingWeek, clients:[...]}`. Each client: identity (`id,name,act:"act_<num>",dot(ok|warn|bad|off),status,type,chips,sub,leadsWk`); pipeline clients add `ghlLoc,ghlPipe,funnel`(numeric or pending); **`weekly`**: 4 × `{wk,spend,leads,cpl,cpm,ctr,freq}` raw (null for N/A); `lowvol:true` if <~8 leads/wk; `creatives:{cols,rows}`; narrative `verdict:{tone,html}`, `wins:[{t,b,s}]`, `problems:[{tone,t,b,fix,s}]`. `newCampaign:true` clients give `kpis`(v+`prior:null`)+`launchNote` instead of `weekly`.
 
-## 5. Narrative (the point of the report)
-Verdict = one honest decision-sentence, not a restatement of tiles; set `tone`+`dot` to match. wins/problems must say what you couldn't read off the numbers; every problem names a specific entity + a concrete **fix**. Cost metrics: down=good. Never call a trend on 1–3 leads (that's `lowvol`). Be willing to be unflattering about our own work.
+## 5. Narrative — DIG FOR ROOT CAUSE (the point of the report)
+Verdict = one honest decision-sentence, not a restatement of tiles; set `tone`+`dot` to match. Every
+problem must say something you could NOT read off the tiles, name the specific entity (this ad, this
+audience, this stage), and give a concrete **fix**. Cost metrics: down=good. Never call a trend on 1–3
+leads (that's `lowvol`). Be willing to be unflattering about our own work.
+
+**For any account you mark `warn` or `bad`, do not just describe the symptom — diagnose WHY by
+cross-referencing the signals, and prescribe the corrective action.** Hunt these patterns explicitly:
+- **Creative fatigue** — frequency rising AND CTR falling together over the weeks (esp. on the ad carrying most spend) → refresh creative, not budget.
+- **Saturated / too-narrow audience** — reach flat or shrinking while frequency climbs, and/or CPM far above the roster norm → expand or refresh the audience; more budget just raises frequency.
+- **Broken measurement** — pixel-access / Page-restriction errors, or "Not available" leads on spending ads → fix tracking before trusting CPL or scaling.
+- **Cost vs peers** — CPR above the industry benchmark despite a healthy CTR → the offer / landing page likely converts worse than peers; pressure-test it.
+- **Lead quality gap (pipeline clients)** — an ad with cheap CPL but a low booked/sold rate vs the account, or the cheapest-CPL ad is NOT the cheapest cost-per-sold → judge and fund on cost-per-sold, not CPL.
+- **Spend concentration** — one ad carrying >~60% of spend with no cheaper proven backup → single point of failure; stand up challengers.
+- **Pipeline leaks (GHL)** — leads piling up unworked in an early stage, high no-show rate, or a stage where the cohort stalls → a client-ops issue to raise, not a media one.
+- **Budget misallocation** — the highest-spend ad is not the most efficient one → rebalance toward the efficient creative.
+Connect at least one such pattern for each struggling account, with the number that proves it and the specific next step.
 
 ## 6. Build → publish → notify
 1. Write `data.json`; run `node build.mjs`. Fix JSON + rerun if it errors.
