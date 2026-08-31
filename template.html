@@ -202,20 +202,7 @@ table.wow thead th:not(:first-child){padding-right:77px}
 [hidden]{display:none!important}
 @media(prefers-reduced-motion:no-preference){.panel:not([hidden]){animation:fade .16s ease-out}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
-/* access gate */
-#app{display:none}
-#gate{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--surface-0);padding:24px;text-align:center}
-#gate .eyebrow{display:flex;align-items:center;gap:9px;justify-content:center;font-size:12px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--text-secondary)}
-#gate .eyebrow .b{width:9px;height:9px;border-radius:50%;background:var(--ps-yellow)}
-#gate h2{margin:16px 0 6px;font-size:clamp(30px,6vw,40px);font-weight:780;letter-spacing:-.03em;color:var(--text-primary)}
-#gate .sub{margin:0 0 26px;color:var(--text-secondary);font-size:15px}
-#gate .box{width:100%;max-width:360px;display:flex;flex-direction:column;gap:11px}
-#gate input{padding:14px 16px;border-radius:11px;border:1px solid var(--line);background:var(--surface-1);color:var(--text-primary);font-size:15px;font-family:var(--sans);text-align:center}
-#gate input:focus{outline:2px solid var(--accent-strong);outline-offset:1px;border-color:transparent}
-#gate button{padding:14px 16px;border-radius:11px;border:0;background:var(--ps-yellow);color:#000;font-weight:750;font-size:15px;cursor:pointer;font-family:var(--sans);transition:filter .12s}
-#gate button:hover{filter:brightness(1.05)}
-#gate .err{color:var(--negative);font-size:12.5px;min-height:15px;font-weight:600;margin-top:2px}
-#gate .gfoot{margin-top:30px;font-size:12px;color:var(--text-tertiary);letter-spacing:.02em}
+/* password gate removed — report is open, no login required */
 
 /* ================= PRINT / SAVE-AS-PDF ================= */
 /* Clean white paper. Every client prints in full, each starting on its own page. */
@@ -269,18 +256,6 @@ table.wow thead th:not(:first-child){padding-right:77px}
   .charts{gap:10px}
 }
 </style>
-
-<div id="gate">
-  <div class="eyebrow"><span class="b"></span>Posted Social</div>
-  <h2>Ads Intelligence</h2>
-  <div class="sub">Enter your access password to continue</div>
-  <div class="box">
-    <input id="gpw" type="password" placeholder="Access password" autocomplete="off" aria-label="Access password">
-    <button id="gbtn">Access Dashboard</button>
-    <div class="err" id="gerr"></div>
-  </div>
-  <div class="gfoot">Posted Social · Ads Intelligence · Private Access</div>
-</div>
 
 <div id="app">
 <div class="appbar">
@@ -384,7 +359,7 @@ function panelHTML(c){
   }
   // creatives
   h+='<section><div class="shead"><h2>Top creatives</h2><span class="hint">'+(ads?'Meta metrics · last 30 days · top by spend':'Meta spend joined to GHL outcomes on utmAdId · last 30 days')+'</span></div><div class="card tscroll"><table class="cwrap"><thead><tr>'+c.creatives.cols.map(function(x){return '<th>'+x+'</th>';}).join('')+'</tr></thead><tbody>'+
-    c.creatives.rows.map(function(r){return '<tr><td><span class="creat"><span class="cn">'+r.name+'</span><span class="cm">'+r.meta+'</span></span></td>'+r.c.map(function(v){return '<td class="num">'+v+'</td>';}).join('')+'<td>'+(r.tag[1]?'<span class="tag2 '+r.tag[0]+'">'+r.tag[1]+'</span>':'')+'</td></tr>';}).join('')+
+    c.creatives.rows.map(function(r){return '<tr><td><span class="creat"><span class="cn">'+r.name+'</span><span class="cm">'+r.meta+'</span></span></td>'+r.c.map(function(v){return '<td class="num">'+v+'</td>';}).join('')+'<td>'+(r.tag&&r.tag[1]?'<span class="tag2 '+r.tag[0]+'">'+r.tag[1]+'</span>':'')+'</td></tr>';}).join('')+
     '</tbody></table></div></section>';
   h+='</div>';
   return h;
@@ -462,7 +437,8 @@ CLIENTS.forEach(function(c){
   t.innerHTML='<span class="dot '+c.dot+'"></span>'+c.name;
   t.addEventListener('click',function(){show(c.id);});
   tabsEl.appendChild(t);
-  panelsEl.insertAdjacentHTML('beforeend',panelHTML(c));
+  try{ panelsEl.insertAdjacentHTML('beforeend',panelHTML(c)); }
+  catch(err){ panelsEl.insertAdjacentHTML('beforeend','<div class="panel" id="p-'+c.id+'" role="tabpanel" hidden><div class="titleband"><div><h1>'+c.name+'</h1><div class="subid mono">'+(c.sub||'')+'</div></div></div><div class="verdict bad"><span class="tag">Render error</span><p>This client hit a render error and was skipped so the rest of the report still loads.</p></div></div>'); console.error('panel render failed for '+c.id, err); }
 });
 var st=document.createElement('button');st.className='tab settings-tab';st.setAttribute('role','tab');st.id='t-settings';st.setAttribute('aria-controls','p-settings');st.textContent='⚙ Settings';
 st.addEventListener('click',function(){show('settings');});
@@ -523,21 +499,6 @@ document.getElementById('theme').addEventListener('click',function(){var r=docum
   });
 })();
 
-CLIENTS.forEach(renderCharts);
+CLIENTS.forEach(function(c){try{renderCharts(c);}catch(err){console.error('chart render failed for '+c.id, err);}});
 show('stlsc');
-
-// simple client-side access gate
-(function(){
-  var gate=document.getElementById('gate'),app=document.getElementById('app');
-  var inp=document.getElementById('gpw'),btn=document.getElementById('gbtn'),err=document.getElementById('gerr');
-  function unlock(){gate.style.display='none';app.style.display='block';}
-  function submit(){
-    if(inp.value==='postedsocial2026'){ try{sessionStorage.setItem('ps_ok','1');}catch(e){} unlock(); }
-    else { err.textContent='Incorrect password — try again.'; inp.value=''; inp.focus(); }
-  }
-  var ok=false; try{ok=sessionStorage.getItem('ps_ok')==='1';}catch(e){}
-  if(ok){ unlock(); } else { setTimeout(function(){inp.focus();},50); }
-  btn.addEventListener('click',submit);
-  inp.addEventListener('keydown',function(e){if(e.key==='Enter')submit();});
-})();
 </script>
