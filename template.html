@@ -50,7 +50,7 @@ body{margin:0;background:var(--surface-0);color:var(--text-primary);font-family:
 .iconbtn:hover{background:var(--surface-2)}
 .pdfbtn{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface-1);color:var(--text-secondary);cursor:pointer;font:inherit;font-size:12.5px;font-weight:650;white-space:nowrap;transition:background .12s,color .12s}
 .pdfbtn:hover{background:var(--surface-2);color:var(--text-primary)}
-.tabs{max-width:1180px;margin:0 auto;display:flex;gap:2px;padding:0 14px;overflow-x:auto;scrollbar-width:thin}
+.tabs{max-width:1180px;margin:0 auto;display:flex;gap:2px;padding:0 14px;overflow-x:auto;scrollbar-width:thin;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
 .tab{flex:none;display:flex;align-items:center;gap:8px;padding:11px 14px;background:none;border:0;border-bottom:2px solid transparent;color:var(--text-secondary);font:inherit;font-size:13px;cursor:pointer;white-space:nowrap;margin-bottom:-1px;transition:color .12s}
 .tab:hover{color:var(--text-primary)}
 .tab[aria-selected="true"]{color:var(--text-primary);border-bottom-color:var(--ps-yellow);font-weight:650}
@@ -474,6 +474,8 @@ function settingsHTML(){
 function show(id){
   document.querySelectorAll('.tab').forEach(function(t){t.setAttribute('aria-selected',String(t.id==='t-'+id));});
   document.querySelectorAll('.panel').forEach(function(p){p.hidden=(p.id!=='p-'+id);});
+  var tabsC=document.getElementById('tabs'),at=document.getElementById('t-'+id);
+  if(tabsC&&at){try{tabsC.scrollTo({left:at.offsetLeft-tabsC.clientWidth/2+at.clientWidth/2,behavior:'smooth'});}catch(e){}}
   window.scrollTo({top:0});
 }
 document.getElementById('theme').addEventListener('click',function(){var r=document.documentElement,cur=r.getAttribute('data-theme');r.setAttribute('data-theme',cur==='dark'?'light':cur==='light'?'dark':(matchMedia('(prefers-color-scheme:dark)').matches?'light':'dark'));setTimeout(function(){CLIENTS.forEach(renderCharts);},20);});
