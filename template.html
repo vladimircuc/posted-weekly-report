@@ -298,7 +298,7 @@ function frow(name,val,w,color,pct,pl,dark){
 }
 function taperFunnel(f){
   return '<div class="card funnelcard"><div class="cap">Lead → sale funnel</div><div class="funnel">'+
-    frow('Leads',f.leads,100,'#ffd100','cohort','')+
+    frow('Cohort leads',f.leads,100,'#ffd100','','')+
     frow('Booked',f.booked,74,'#f0be00',f.bp,'of leads')+
     frow('Showed',f.showed,50,'#dca800',f.sp,'of booked')+
     frow('Sold',f.sold,32,'#b98600',f.cp,'of showed',true)+
