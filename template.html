@@ -501,4 +501,15 @@ document.getElementById('theme').addEventListener('click',function(){var r=docum
 
 CLIENTS.forEach(function(c){try{renderCharts(c);}catch(err){console.error('chart render failed for '+c.id, err);}});
 show('stlsc');
+
+// Chart colors are baked from the computed palette at render time. Inside the
+// claude.ai artifact frame the host applies the viewer's theme AFTER this script
+// runs, so re-render whenever the theme flips — otherwise dark-mode "ink" charts
+// (Leads bars, CTR, Frequency) get baked near-black and vanish on the dark bg.
+(function(){
+  function rerender(){ CLIENTS.forEach(function(c){try{renderCharts(c);}catch(e){}}); }
+  try{ new MutationObserver(rerender).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme','style']}); }catch(e){}
+  try{ var mq=matchMedia('(prefers-color-scheme:dark)'); if(mq.addEventListener)mq.addEventListener('change',rerender); else if(mq.addListener)mq.addListener(rerender); }catch(e){}
+  setTimeout(rerender,300);
+})();
 </script>
