@@ -23,7 +23,7 @@ For EACH account, first discover the live campaign(s):
 - Pull `level:"campaign"`, `date_preset:"last_30d"`, fields `["id","name","objective","effective_status","amount_spent"]`.
 - Keep campaigns where `effective_status` == `ACTIVE` **and** `objective` == `OUTCOME_LEADS`. Collect their ids → `ACTIVE_IDS`.
 - One account is pre-pinned by the runner (Posted Social) to a single campaign id — for it use ONLY that id and ignore everything else.
-- If an account has no active lead campaign, mark it paused/skipped in the report (dot `off`, a one-line note) and do not pull metrics for it.
+- If an account has no active lead campaign (paused/off this week), **OMIT it from the report entirely** — do NOT add it to `data.json`, do NOT pull metrics. The report shows a tab ONLY for clients whose lead campaign is actively delivering; paused clients get no tab. This applies to the pinned campaign-scoped account too: if its one campaign is paused, omit that client this week. It reappears automatically the week its campaign goes active again. (The template also hard-filters to `status:"active"` clients as a safety net, so never emit a non-active client expecting it to show.)
 
 Then scope EVERY Meta metric pull to `ACTIVE_IDS`: `level:"campaign"` + `filtering:[{"field":"campaign.id","operator":"IN","value":ACTIVE_IDS}]`. Usually there is ONE active lead campaign per client; if there are several, the campaign-level weekly returns one row-set per campaign — SUM them per week. If a scoped campaign has <2 completed weeks of delivery, mark that client `newCampaign:true` (see Appendix).
 

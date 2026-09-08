@@ -432,7 +432,9 @@ function deltaHTML(sign,dir,lown){
 }
 
 var tabsEl=document.getElementById('tabs'), panelsEl=document.getElementById('panels');
-CLIENTS.forEach(function(c){
+// Only ACTIVE clients get a tab — paused / no-active-campaign clients are omitted entirely (no tab, no panel).
+var ACTIVE = CLIENTS.filter(function(c){ return (c.status||'active')==='active'; });
+ACTIVE.forEach(function(c){
   var t=document.createElement('button');t.className='tab';t.setAttribute('role','tab');t.id='t-'+c.id;t.setAttribute('aria-controls','p-'+c.id);
   t.innerHTML='<span class="dot '+c.dot+'"></span>'+c.name;
   t.addEventListener('click',function(){show(c.id);});
@@ -502,7 +504,7 @@ document.getElementById('theme').addEventListener('click',function(){var r=docum
 })();
 
 CLIENTS.forEach(function(c){try{renderCharts(c);}catch(err){console.error('chart render failed for '+c.id, err);}});
-show('stlsc');
+show((ACTIVE[0]||{id:'settings'}).id);
 
 // Chart colors are baked from the computed palette at render time. Inside the
 // claude.ai artifact frame the host applies the viewer's theme AFTER this script
