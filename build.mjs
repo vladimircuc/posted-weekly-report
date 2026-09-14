@@ -43,9 +43,19 @@ function build(c){
   if(c.ghlLoc) o.ghlLoc=c.ghlLoc;
   if(c.ghlPipe) o.ghlPipe=c.ghlPipe;
   if(c.funnel) o.funnel=c.funnel;
-  if(c.newCampaign){ o.newCampaign=true; o.launchNote=c.launchNote; o.kpis=c.kpis; return o; }
+  // `newCampaign` is a LAUNCH-WEEK courtesy: it swaps the trend charts + week-over-week table
+  // for a launch note. Treat it as a HINT, not a verdict — build decides, so the judgement never
+  // depends on the agent eyeballing "is this campaign new?". A campaign with 2+ weeks that
+  // actually spent has real history and gets real trends even if it was flagged new (Omen was
+  // wrongly flagged on 2026-09-14 because its first week was partial). Also falls back to the
+  // note whenever there just isn't enough weekly history to diff against.
+  const W = Array.isArray(c.weekly) ? c.weekly : [];
+  const delivered = W.filter(w => w && w.spend > 0).length;
+  if(W.length < 2 || (c.newCampaign && delivered < 2)){
+    o.newCampaign=true; o.launchNote=c.launchNote; o.kpis=c.kpis; return o;
+  }
 
-  const W=c.weekly, last=W[W.length-1], prev=W[W.length-2];
+  const last=W[W.length-1], prev=W[W.length-2];
   o.weeks = W.map(w=>shortWk(w.wk));
   o.kpis = KT.map(m=>{
     const k={l:m.l,fmt:m.kf,v:last[m.key],prior:prev[m.key],d:d1(last[m.key],prev[m.key]),dir:m.dir};
