@@ -110,10 +110,15 @@ Connect at least one such pattern for each struggling account, with the number t
 
 ## 6. Build → publish → notify
 1. Write `data.json`; run `node build.mjs`. Fix JSON + rerun if it errors.
-2. Publish `report.html` with the Artifact tool: `file_path:"report.html"`, `url:"<REPORT_URL from runner>"`, `title:"Posted — Monday Ads Review"`, favicon a chart-decreasing emoji. Capture PAGE_URL.
+2. Publish `report.html` with the Artifact tool: `file_path:"report.html"`, `url:"<REPORT_URL from runner>"`, `title:"Posted — Monday Ads Review"`, favicon a chart-decreasing emoji.
+   **PAGE_URL is always the literal REPORT_URL from the runner config — never the URL the publish result echoes back.** The platform sometimes returns a different alias for the same artifact (it switched to short `claude.ai/artifact/<code>` links on 2026-09-21); publishing with `url:` updates the artifact in place either way, and the team has the config URL bookmarked. A changed link in Slack reads like a broken report even when it works.
 3. **Slack — a REQUIRED delivery step.** The report existing is not the same as the team seeing it.
    - a. If `mcp__Slack__slack_send_message` did not load in preflight, retry it NOW: the `select:` ToolSearch, `Bash: sleep 45` between tries, up to 5 more attempts. A connector missing at minute 1 is often up by minute 15.
-   - b. Post to `<SLACK_CHANNEL from runner>`, message starting with `<!channel>`: `<!channel> ✅ Weekly Ads Review — week of <reportingWeek>. <one line, e.g. "1 needs work (X), 3 to watch, rest healthy">. Report: PAGE_URL`
+   - b. Post to `<SLACK_CHANNEL from runner>`, message starting with `<!channel>`. The format is FIXED — same shape every week, so the channel scans at a glance:
+
+     `<!channel> ✅ Weekly Ads Review — week of <reportingWeek>. <N> need work (<names>), <M> to watch (<names>), <K> healthy (<names>). Report: PAGE_URL`
+
+     Rules for the summary sentence: ONE sentence. Use the client's **full name** as it appears in the report (`St. Louis Sports Clinic`, not `StLSC`). Drop any of the three groups that is empty. At most a short shared reason per group (`— audience saturation`), never a per-client explanation — the detail belongs in the report, not the ping. If clients were omitted, add them as a trailing clause inside the same sentence (`; Posted Social omitted, campaign paused`), not as a second sentence.
    - c. **Verify it landed** — the tool returns a ts/permalink. A call that errored is not a post.
    - d. If it still cannot post, the run is a **PARTIAL FAILURE** even though the report published. Lead with `SLACK POST FAILED` on the first line of both the PushNotification and the run summary — do not lead with the report link. Silent Slack failure is exactly how three weeks of reports went unnoticed.
 4. Fire a PushNotification (short summary + same one-liner).
