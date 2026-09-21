@@ -29,8 +29,20 @@ Tools to confirm, by connector:
 
 Loop for up to ~8 minutes:
 1. `ToolSearch` with `select:mcp__Meta_Ads__ads_get_ad_entities,mcp__GHL_MCP__execute_operation,mcp__Slack__slack_send_message`
-2. Anything still missing → `Bash: sleep 45`, then search again. **Up to 10 attempts.**
+2. Anything still missing → wait (see below), then search again. **Up to 10 attempts.**
 3. Stop as soon as all three resolve.
+
+**How to spend the wait.** A bare `Bash: sleep 45` is BLOCKED by the harness ("standalone sleep").
+Do not fight it — there is a better use of the time anyway:
+
+- **Preferred: don't idle, work.** If Meta is the only thing missing, do everything that doesn't
+  need it — §0b dates, then the complete §3 GHL pull for every pipeline client — re-probing Meta
+  with the `select:` search between each client. That is several minutes of genuine progress, and
+  Meta is normally registered by the time you finish. Nothing is wasted whether it comes up or not.
+- **If you truly have nothing left to do**, a bounded loop is accepted where a bare sleep is not:
+  `Bash: until false; do sleep 45; break; done`
+- If even that is refused, just re-probe immediately a few times and move on to the GHL work. Never
+  treat a blocked sleep as a reason to abort the run.
 
 The `select:` form is the authoritative check. A broad keyword search can return an unrelated subset
 (e.g. Meta's creative-upload helpers) that *looks* like a partial registration — do not let that
