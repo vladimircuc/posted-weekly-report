@@ -5,10 +5,42 @@ holds `template.html` + `build.mjs`. **The runner message supplies the client ro
 stage mappings, the campaign-scoped account, the publish URL, and the Slack channel** — this file is the
 generic method. Produce `data.json`, run `node build.mjs` (writes `report.html`), publish it, notify Slack.
 Everything is READ-ONLY except the final publish + Slack post. If one account fails, degrade and KEEP GOING
-— a partial report that ships beats a perfect one that doesn't. Do NOT compute any percentages yourself;
+— a partial report that ships beats a perfect one that doesn't. A **missing connector is not a failing
+account**: wait for it per §0a before degrading anything. Do NOT compute any percentages yourself;
 `build.mjs` computes every delta/trend/week-over-week figure from the raw `weekly` arrays.
 
-## 0. Dates (compute fresh)
+## 0. Preflight, then dates
+
+### 0a. PREFLIGHT — wait for the connectors (DO THIS BEFORE ANYTHING ELSE)
+The sandbox attaches MCP connectors **asynchronously**, and their tool lists can arrive LATE or
+PARTIAL. This has broken three production runs: **Sep 7** (GHL + Slack registered zero tools),
+**Sep 14** (Slack zero tools), **Sep 21** (Meta_Ads exposed only 5 creative-upload tools, and the
+run aborted with no report at all). In every case the connector was configured correctly — the agent
+simply looked too early and gave up inside a minute. **Never conclude a connector is broken until you
+have waited it out.**
+
+Tools to confirm, by connector:
+
+| Connector | Probe tool | If absent |
+|---|---|---|
+| Meta_Ads | `mcp__Meta_Ads__ads_get_ad_entities` | HARD STOP — it is the sole source of every spend/lead number |
+| GHL_MCP | `mcp__GHL_MCP__execute_operation` | soft — pipeline funnels degrade to `pending` |
+| Slack | `mcp__Slack__slack_send_message` | soft here — §6.3 retries it at the end |
+
+Loop for up to ~8 minutes:
+1. `ToolSearch` with `select:mcp__Meta_Ads__ads_get_ad_entities,mcp__GHL_MCP__execute_operation,mcp__Slack__slack_send_message`
+2. Anything still missing → `Bash: sleep 45`, then search again. **Up to 10 attempts.**
+3. Stop as soon as all three resolve.
+
+The `select:` form is the authoritative check. A broad keyword search can return an unrelated subset
+(e.g. Meta's creative-upload helpers) that *looks* like a partial registration — do not let that
+convince you. Exhaustively searching is NOT a substitute for waiting: **sleep and retry.**
+
+After the loop: Meta still missing → genuine platform failure, abort WITHOUT publishing (never
+fabricate), and state in the PushNotification how many attempts over how many minutes you made.
+GHL missing → carry on, funnels go `pending`. Slack missing → carry on, §6.3 tries again.
+
+### 0b. Dates (compute fresh)
 Report covers the **last completed Mon–Sun week**. Run `date`. LAST_SUN = most recent Sunday; the four
 weekly buckets = the 4 completed weeks ending LAST_SUN. Weekly Meta pull: one call, `time_increment:"7"`,
 `time_range:{since:LAST_SUN-27d, until:LAST_SUN}` → 4 rows oldest→newest, label "Mon D – D".
@@ -67,9 +99,13 @@ Connect at least one such pattern for each struggling account, with the number t
 ## 6. Build → publish → notify
 1. Write `data.json`; run `node build.mjs`. Fix JSON + rerun if it errors.
 2. Publish `report.html` with the Artifact tool: `file_path:"report.html"`, `url:"<REPORT_URL from runner>"`, `title:"Posted — Monday Ads Review"`, favicon a chart-decreasing emoji. Capture PAGE_URL.
-3. Slack — load `mcp__Slack__slack_send_message`, post to `<SLACK_CHANNEL from runner>`, message starting with `<!channel>`: `<!channel> ✅ Weekly Ads Review — week of <reportingWeek>. <one line, e.g. "1 needs work (X), 3 to watch, rest healthy">. Report: PAGE_URL`
+3. **Slack — a REQUIRED delivery step.** The report existing is not the same as the team seeing it.
+   - a. If `mcp__Slack__slack_send_message` did not load in preflight, retry it NOW: the `select:` ToolSearch, `Bash: sleep 45` between tries, up to 5 more attempts. A connector missing at minute 1 is often up by minute 15.
+   - b. Post to `<SLACK_CHANNEL from runner>`, message starting with `<!channel>`: `<!channel> ✅ Weekly Ads Review — week of <reportingWeek>. <one line, e.g. "1 needs work (X), 3 to watch, rest healthy">. Report: PAGE_URL`
+   - c. **Verify it landed** — the tool returns a ts/permalink. A call that errored is not a post.
+   - d. If it still cannot post, the run is a **PARTIAL FAILURE** even though the report published. Lead with `SLACK POST FAILED` on the first line of both the PushNotification and the run summary — do not lead with the report link. Silent Slack failure is exactly how three weeks of reports went unnoticed.
 4. Fire a PushNotification (short summary + same one-liner).
-5. Print a run summary: accounts pulled cleanly, GHL funnels that went pending, PAGE_URL, Slack result.
+5. Print a run summary, **leading with any delivery failure**: Slack result first, then accounts pulled cleanly, GHL funnels that went pending, PAGE_URL, and how long preflight waited on each connector.
 
 ## Appendix — exact data.json shape (RAW; build.mjs computes every %). Fictional sample.
 One pipeline client:
