@@ -43,6 +43,7 @@ function build(c){
   if(c.ghlLoc) o.ghlLoc=c.ghlLoc;
   if(c.ghlPipe) o.ghlPipe=c.ghlPipe;
   if(c.funnel) o.funnel=c.funnel;
+  if(c.adsets) o.adsets=c.adsets;   // optional per-ad-set table; kept for newCampaign clients too
   // `newCampaign` is a LAUNCH-WEEK courtesy: it swaps the trend charts + week-over-week table
   // for a launch note. Treat it as a HINT, not a verdict — build decides, so the judgement never
   // depends on the agent eyeballing "is this campaign new?". A campaign with 2+ weeks that

@@ -357,6 +357,12 @@ function panelHTML(c){
     c.wow.rows.map(function(r){return '<tr><td class="period">'+r.w+'</td>'+r.c.map(function(cell,ci){return '<td><span class="cell"><span class="v num">'+cell[0]+'</span><span class="p">'+pillHTML(cell[1],c.wow.cols[ci][1])+'</span></span></td>';}).join('')+'</tr>';}).join('')+
     '</tbody></table></div></section>';
   }
+  // ad-set breakdown (optional) — for clients running more than one meaningful ad set
+  if(c.adsets && c.adsets.rows && c.adsets.rows.length){
+    h+='<section><div class="shead"><h2>Ad set breakdown</h2><span class="hint">'+(c.adsets.note||'Meta metrics · last 30 days · one row per active ad set')+'</span></div><div class="card tscroll"><table class="cwrap"><thead><tr>'+c.adsets.cols.map(function(x){return '<th>'+x+'</th>';}).join('')+'</tr></thead><tbody>'+
+      c.adsets.rows.map(function(r){return '<tr><td><span class="creat"><span class="cn">'+r.name+'</span><span class="cm">'+(r.meta||'')+'</span></span></td>'+r.c.map(function(v){return '<td class="num">'+v+'</td>';}).join('')+'<td>'+(r.tag&&r.tag[1]?'<span class="tag2 '+r.tag[0]+'">'+r.tag[1]+'</span>':'')+'</td></tr>';}).join('')+
+      '</tbody></table></div></section>';
+  }
   // creatives
   h+='<section><div class="shead"><h2>Top creatives</h2><span class="hint">'+(ads?'Meta metrics · last 30 days · top by spend':'Meta spend joined to GHL outcomes on utmAdId · last 30 days')+'</span></div><div class="card tscroll"><table class="cwrap"><thead><tr>'+c.creatives.cols.map(function(x){return '<th>'+x+'</th>';}).join('')+'</tr></thead><tbody>'+
     c.creatives.rows.map(function(r){return '<tr><td><span class="creat"><span class="cn">'+r.name+'</span><span class="cm">'+r.meta+'</span></span></td>'+r.c.map(function(v){return '<td class="num">'+v+'</td>';}).join('')+'<td>'+(r.tag&&r.tag[1]?'<span class="tag2 '+r.tag[0]+'">'+r.tag[1]+'</span>':'')+'</td></tr>';}).join('')+
