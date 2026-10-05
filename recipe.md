@@ -56,6 +56,7 @@ GHL missing → carry on, funnels go `pending`. Slack missing → carry on, §6.
 Report covers the **last completed Mon–Sun week**. Run `date`. LAST_SUN = most recent Sunday; the four
 weekly buckets = the 4 completed weeks ending LAST_SUN. Weekly Meta pull: one call, `time_increment:"7"`,
 `time_range:{since:LAST_SUN-27d, until:LAST_SUN}` → 4 rows oldest→newest, label "Mon D – D".
+**The week label format is FIXED and carries NO year**: `"Sep 21 – 27"` within one month, `"Sep 28 – Oct 4"` across months (en dash, a space either side). This applies to `reportingWeek` and to every weekly bucket. Never append the year — the Oct 5 run stamped "Sep 28 – Oct 4, 2026" and broke consistency with every earlier report header and Slack post.
 30d = `date_preset:"last_30d"`; prior-30d = the 30 days before that (for the verdict's MoM facts).
 
 ## 1. Roster & campaign scoping (IMPORTANT)
