@@ -87,9 +87,14 @@ if(data.generatedUtc){
       weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'});
   }catch(e){ ran = ''; }
 }
+// Full configured roster for the Settings tab — every client the run knows about,
+// including ones it did NOT report this week, so they can be switched back on.
+const roster = Array.isArray(data.roster) ? data.roster : [];
+
 const out = tpl
   .split('__CLIENTS_DATA__').join(JSON.stringify(clients))
+  .split('__ROSTER_DATA__').join(JSON.stringify(roster))
   .split('__WEEK__').join(week)
   .split('__RAN__').join(ran);
 writeFileSync(new URL('./report.html', import.meta.url), out);
-console.log('report.html written —', out.length, 'chars,', clients.length, 'clients, week', JSON.stringify(week), '· ran', JSON.stringify(ran));
+console.log('report.html written —', out.length, 'chars,', clients.length, 'clients,', roster.length, 'roster rows, week', JSON.stringify(week), '· ran', JSON.stringify(ran));

@@ -60,6 +60,33 @@ weekly buckets = the 4 completed weeks ending LAST_SUN. Weekly Meta pull: one ca
 30d = `date_preset:"last_30d"`; prior-30d = the 30 days before that (for the verdict's MoM facts).
 
 ## 1. Roster & campaign scoping (IMPORTANT)
+
+
+### 1a. ROSTER SWITCHES — read them BEFORE deciding who to report
+The report's Settings tab has a live **Include** switch per client, stored in the artifact's own database.
+It holds OVERRIDES ONLY: **no document for a client means include them.** A document with `active:false`
+means the user has switched that client OFF and you must skip them exactly like a paused client — no tab,
+not in data.json, not in the Slack line.
+
+1. Read collection `roster` on REPORT_URL. Use the `Artifact` tool's `action:"read_db"` with
+   `db_op:"list"`, `collection:"roster"`; if this session exposes an `ArtifactData` tool instead, use that
+   with `action:"list"`. Each document's id is a client id; its body has `active`.
+2. Apply: config roster MINUS any id whose document says `active:false`. Keep a list of the names you
+   skipped this way.
+3. **If the read fails or the tool is unavailable, carry on with the full config roster** and say so
+   explicitly in the run summary ("roster switches unreadable — used config roster"). Never abort for this,
+   and never guess that a client is off.
+
+Also emit the full configured roster in data.json as a top-level `roster` array:
+`[{id,name,act,type,ghlLoc,ghlPipe}, ...]` — EVERY client in the config roster, including ones you are not
+reporting this week. The Settings tab is built from it, and a client missing from it cannot be switched
+back on. Omit clients listed under "OFF THE ROSTER" in the config; those are gone for good.
+
+After publishing (§6.2), write the status document back so the page can show what actually happened:
+`write_db` / `ArtifactData` `set` on collection `status`, doc `lastRun`, body
+`{"week": "<reportingWeek>", "ranAt": "<ISO now>", "skipped": ["<names switched off>"]}`.
+If that write fails, note it in the summary and move on — it is display only.
+
 The runner lists every account: `id, name, Meta act (numeric), type (pipeline|ads), GHL location, GHL
 pipeline id`. **Report ONLY the currently-RUNNING lead campaign(s) for each account — never pull at
 `level:"ad_account"`, because that sweeps in paused/stopped campaigns' old spend.**
@@ -92,7 +119,7 @@ Parse strings: `"$1,234.56 USD"`→1234.56, `"1.30%"`→1.30, `"Not available"`�
 - If it works: matured-cohort funnel = opps created ~3–4 wks ago bucketed by current stage, mapped to Leads→Booked→Showed→Sold **using the per-pipeline stage mapping the runner provides**. Join creatives via `attributions[].utmAdId` for cost-per-sold. Emit numeric `funnel:{leads,booked,showed,sold,bp,sp,cp,note}`.
 
 ## 4. data.json schema
-`{generatedUtc, reportingWeek, clients:[...]}`. Each client: identity (`id,name,act:"act_<num>",dot(ok|warn|bad|off),status,type,chips,sub,leadsWk`); pipeline clients add `ghlLoc,ghlPipe,funnel`(numeric or pending); **`weekly`**: 4 × `{wk,spend,leads,cpl,cpm,ctr,freq}` raw (null for N/A); `lowvol:true` if <~8 leads/wk; `creatives:{cols,rows}`; optional `adsets:{note,cols,rows}` (same row shape as creatives); narrative `verdict:{tone,html}`, `wins:[{t,b,s}]`, `problems:[{tone,t,b,fix,s}]`. `newCampaign:true` clients add `kpis`(v+`prior:null`)+`launchNote` **in addition to** `weekly` (never instead of it).
+`{generatedUtc, reportingWeek, roster:[...], clients:[...]}` (`roster` = the full configured roster, §1a). Each client: identity (`id,name,act:"act_<num>",dot(ok|warn|bad|off),status,type,chips,sub,leadsWk`); pipeline clients add `ghlLoc,ghlPipe,funnel`(numeric or pending); **`weekly`**: 4 × `{wk,spend,leads,cpl,cpm,ctr,freq}` raw (null for N/A); `lowvol:true` if <~8 leads/wk; `creatives:{cols,rows}`; optional `adsets:{note,cols,rows}` (same row shape as creatives); narrative `verdict:{tone,html}`, `wins:[{t,b,s}]`, `problems:[{tone,t,b,fix,s}]`. `newCampaign:true` clients add `kpis`(v+`prior:null`)+`launchNote` **in addition to** `weekly` (never instead of it).
 
 ## 5. Narrative — DIG FOR ROOT CAUSE (the point of the report)
 Verdict = one honest decision-sentence, not a restatement of tiles; set `tone`+`dot` to match. Every

@@ -282,6 +282,10 @@ const F={
 };
 
 const CLIENTS=__CLIENTS_DATA__;
+// Full configured roster (every client the run knows about, reported or not).
+// Falls back to this week's CLIENTS if the run didn't supply one.
+const ROSTER=(function(){var r=__ROSTER_DATA__;return (r&&r.length)?r:CLIENTS.map(function(c){
+  return {id:c.id,name:c.name,act:c.act,type:c.type,ghlLoc:c.ghlLoc||'',ghlPipe:c.ghlPipe||''};});})();
 var WK='__WEEK__';
 
 function pillHTML(d,dir){
@@ -454,30 +458,75 @@ tabsEl.appendChild(st);
 panelsEl.insertAdjacentHTML('beforeend',settingsHTML());
 
 function settingsHTML(){
-  var rows=CLIENTS.map(function(c){
+  var reported={}; CLIENTS.forEach(function(c){reported[c.id]=true;});
+  var rows=ROSTER.map(function(c){
     var ghl=c.type==='pipeline';
-    return '<tr'+(c.status==='paused'?' class="pausedrow"':'')+'>'+
+    return '<tr data-cid="'+c.id+'">'+
       '<td style="font-weight:650">'+c.name+'</td>'+
-      '<td><label class="toggle"><input type="checkbox"'+(c.status==='active'?' checked':'')+' aria-label="'+c.name+' active"><span class="slider"></span></label></td>'+
-      '<td><input class="fld" value="'+c.act+'"></td>'+
-      '<td><label class="toggle"><input type="checkbox"'+(ghl?' checked':'')+' aria-label="'+c.name+' has GHL"><span class="slider"></span></label></td>'+
-      '<td><input class="fld'+(ghl?'':' warn')+'" value="'+(ghl?c.ghlLoc:'— none —')+'"></td>'+
-      '<td><input class="fld'+(ghl?'':' warn')+'" value="'+(ghl?c.ghlPipe:'— ads only —')+'"></td>'+
+      '<td><label class="toggle"><input type="checkbox" class="rtog" data-cid="'+c.id+'" data-cname="'+c.name+'" checked disabled aria-label="Include '+c.name+' in the Monday run"><span class="slider"></span></label></td>'+
+      '<td class="rstate" style="font-size:11.5px;color:var(--text-tertiary)">'+(reported[c.id]?'reported this week':'not reported this week')+'</td>'+
+      '<td class="mono" style="font-size:11.5px">'+c.act+'</td>'+
+      '<td style="font-size:11.5px">'+(ghl?c.ghlPipe:'ads only')+'</td>'+
     '</tr>';
   }).join('');
   return '<div class="panel" id="p-settings" role="tabpanel" hidden>'+
     '<div class="titleband"><div><h1>Settings</h1><div class="subid">What the Monday run reads before it does anything else</div></div></div>'+
-    '<p class="setnote">One row per client. Toggle <b>Active</b> to include a client in the run (off = paused &amp; skipped). Toggle <b>GHL pipeline</b> on for clients with a CRM — those get the full funnel and cost-per-sold; clients with it off render the <b>ads-only</b> layout automatically, no empty pipeline sections. The pipeline + location fields only matter when GHL is on. Saved as <span class="mono">clients.json</span> next to the scheduled task.</p>'+
-    '<div class="card setgrid"><table><thead><tr><th>Client</th><th>Active</th><th>Meta ad account</th><th>GHL pipeline</th><th>GHL location</th><th>Pipeline</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<p class="setnote"><b>Include</b> is the only control here, and it is live: switching a client off is saved immediately and the next Monday run skips them. Switching one back on returns them the following week. Everything else on this page is read-only — ad accounts and pipelines are set in the routine config, so ask Claude to change those. A client can be <i>on</i> here and still not appear in a given week if their campaign was paused — the third column says which.</p>'+
+    '<div id="rosterNote" class="setnote" style="color:var(--warning)">Connecting to roster storage…</div>'+
+    '<div class="card setgrid"><table><thead><tr><th>Client</th><th>Include</th><th>This week</th><th>Meta ad account</th><th>Pipeline</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
     '<section><div class="shead"><h2>Run</h2></div><div class="kpis wide" style="grid-template-columns:repeat(4,1fr)">'+
       '<div class="kpi"><div class="kl">Schedule</div><div class="kv" style="font-size:18px">Mon 5:00 AM</div><div class="ksub">America/Chicago</div></div>'+
       '<div class="kpi"><div class="kl">Reporting week</div><div class="kv" style="font-size:18px">Mon – Sun</div><div class="ksub">closed weeks only</div></div>'+
       '<div class="kpi"><div class="kl">Delivery</div><div class="kv" style="font-size:18px">#ad-reports</div><div class="ksub">via Slack connector</div></div>'+
-      '<div class="kpi"><div class="kl">Runs on</div><div class="kv" style="font-size:18px">Cloud</div><div class="ksub">laptop-independent</div></div>'+
+      '<div class="kpi"><div class="kl">Last run honoured</div><div class="kv" id="lastApplied" style="font-size:18px">—</div><div class="ksub" id="lastAppliedSub">waiting for storage</div></div>'+
     '</div></section>'+
     '<div class="foot"><span>Posted Social · internal ads review · not client-facing</span><span>Live from Meta Ads API + GoHighLevel · USD</span></div>'+
     '</div>';
 }
+
+// --- Roster toggles, backed by the artifact's own database -------------------
+// The db stores OVERRIDES ONLY: no document for a client means "include".
+// A document with active:false means the Monday run skips them. An empty db
+// therefore behaves exactly like the config roster, which is the safe default.
+(function(){
+  var noteEl=function(){return document.getElementById('rosterNote');};
+  function note(txt,warn){var n=noteEl();if(!n)return;n.textContent=txt;n.style.color=warn?'var(--negative)':'var(--text-tertiary)';}
+  function togs(){return Array.prototype.slice.call(document.querySelectorAll('.rtog'));}
+  if(!(window.claude&&claude.use)){note('Roster switches work only in the claude.ai viewer. Open the report there to change who is included.');return;}
+  var timer=setTimeout(function(){note('Roster storage is not answering. The switches below may be out of date — do not trust them until this clears.',true);},10000);
+  Promise.all([claude.use('db'),claude.use('user')]).then(function(r){
+    var db=r[0],user=r[1];
+    if(!db){clearTimeout(timer);note('Roster storage unavailable in this view, so the switches are disabled. Ask Claude to change the roster instead.');return;}
+    Promise.resolve(user&&user.can?user.can('data.write'):null).then(function(canWrite){
+      db.collection('roster').onSnapshot(function(snap){
+        clearTimeout(timer);
+        var off={};
+        snap.docs.forEach(function(d){var v=d.data()||{};if(v.active===false)off[d.id]=true;});
+        togs().forEach(function(t){t.checked=!off[t.dataset.cid];if(canWrite!==false)t.disabled=false;});
+        note(canWrite===false?'You have read-only access, so the switches are disabled.'
+             :'Switching a client off here is saved immediately and applies to the next Monday run.');
+      },function(e){clearTimeout(timer);note('Roster storage error ('+e.code+'). The switches are not reliable — ask Claude to change the roster.',true);});
+
+      db.doc('status/lastRun').onSnapshot(function(d){
+        var el=document.getElementById('lastApplied'),sub=document.getElementById('lastAppliedSub');
+        if(!el)return;
+        if(!d.exists){el.textContent='—';sub.textContent='no run has read these switches yet';return;}
+        var v=d.data()||{},sk=v.skipped||[];
+        el.textContent=v.week||'—';
+        sub.textContent=sk.length?('skipped by switch: '+sk.join(', ')):'no client was switched off';
+      },function(){});
+    });
+
+    document.addEventListener('change',function(ev){
+      var t=ev.target; if(!t||!t.classList||!t.classList.contains('rtog'))return;
+      var id=t.dataset.cid,on=t.checked;
+      t.disabled=true;
+      db.collection('roster').doc(id).set({active:on,name:t.dataset.cname,updatedAt:new Date().toISOString()})
+        .then(function(){t.disabled=false;note((on?'Included ':'Excluded ')+t.dataset.cname+' — applies to the next Monday run.');})
+        .catch(function(e){t.checked=!on;t.disabled=false;note('Could NOT save '+t.dataset.cname+' ('+e.code+'). The switch has been put back — nothing changed.',true);});
+    });
+  }).catch(function(){clearTimeout(timer);note('Roster storage could not be reached, so the switches are disabled.',true);});
+})();
 
 function show(id){
   document.querySelectorAll('.tab').forEach(function(t){t.setAttribute('aria-selected',String(t.id==='t-'+id));});
